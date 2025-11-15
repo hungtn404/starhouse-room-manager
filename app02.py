@@ -160,9 +160,6 @@ if menu == "Admin":
             with st.form("add_form"):
                 so_nha = st.text_input("Số nhà", placeholder="Ví dụ: 745/10/5")
                 # replace '/' with '.' as requested
-                if isinstance(so_nha, str) and "/" in so_nha:
-                    so_nha = so_nha.replace("/", ".")
-
                 df_tmp = load_data()
                 street_options = sorted([s for s in df_tmp['Đường'].dropna().unique().tolist()]) if not df_tmp.empty else []
                 default_streets = [
