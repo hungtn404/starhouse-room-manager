@@ -4,26 +4,11 @@ from datetime import datetime
 import os
 import json
 import gspread
-from google.oauth2.service_account import Credentials
 import streamlit as st
-
-try:
-    creds_dict = st.secrets["gcp_service_account"]
-    scope = ["https://www.googleapis.com/auth/spreadsheets",
-             "https://www.googleapis.com/auth/drive"]
-    creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
-    client = gspread.authorize(creds)
-
-    sheet_id = st.secrets["gsheet"]["sheet_id"]
-    sh = client.open_by_key(sheet_id)
-
-    st.success("✅ Kết nối Google Sheet thành công")
-    st.write("Tên Sheet:", sh.title)
-except Exception as e:
-    st.error(f"❌ Kết nối Google Sheet thất bại: {e}")
-
 import pandas as pd
 import base64
+import traceback
+st.text(traceback.format_exc())
 
 # DANH SÁCH TÀI KHOẢN NHÂN VIÊN
 # ============================
@@ -1341,6 +1326,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
