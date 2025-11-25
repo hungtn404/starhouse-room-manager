@@ -6,11 +6,10 @@ import json
 import pandas as pd
 import streamlit as st
 try:
-    import gspread
-    from google.oauth2.service_account import Credentials
-    st.success("✅ gspread và google libs đã load OK")
+    creds_dict = st.secrets["gcp_service_account"]
+    st.json(creds_dict)
 except Exception as e:
-    st.error(f"❌ Không load được gspread/google libs: {e}")
+    st.error(f"❌ Lỗi đọc gcp_service_account: {e}")
 
 import base64
 
@@ -1330,6 +1329,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
