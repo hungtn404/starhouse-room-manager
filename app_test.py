@@ -8,6 +8,15 @@ import streamlit as st
 import pandas as pd
 import base64
 
+import gspread
+from google.oauth2.service_account import Credentials
+from gspread_dataframe import set_with_dataframe, get_as_dataframe
+
+st.write("gspread version:", gspread.__version__)
+st.write("google-auth version:", Credentials.__module__)
+st.write("gspread_dataframe available")
+
+
 def load_data_from_gsheet_safe():
     """
     Load worksheet từ Google Sheet và chuyển sang DataFrame.
@@ -1409,6 +1418,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
