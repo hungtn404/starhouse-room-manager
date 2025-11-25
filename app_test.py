@@ -99,13 +99,20 @@ def list_to_text(x):
     trả về '' nếu rỗng hoặc None.
     """
     import numpy as np
-    if isinstance(x, list) and len(x) > 0:
-        return ", ".join(x)
-    if isinstance(x, (np.ndarray, pd.Series)) and x.size > 0:
-        return ", ".join(x.tolist())
-    if pd.notna(x):
-        return str(x)
-    return ""
+    import pandas as pd
+
+    if isinstance(x, list):
+        return ", ".join(x) if len(x) > 0 else ""
+    if isinstance(x, (np.ndarray, pd.Series)):
+        return ", ".join(x.tolist()) if x.size > 0 else ""
+    if x is None:
+        return ""
+    # pd.notna chỉ dùng với giá trị scalar
+    try:
+        return str(x) if pd.notna(x) else ""
+    except Exception:
+        return ""
+
 
 # -----------------------
 # Google Sheets helpers
@@ -902,9 +909,9 @@ if menu == "Admin":
                     ma_phong = row.get('Mã phòng')
                     # FORMATTING FOR DISPLAY AND SHARE BUTTON
                     gia_text = f"{int(row['Giá']):,} VNĐ" if pd.notna(row.get('Giá')) else ""
-                    loai_text = ", ".join(row['Loại phòng']) if isinstance(row['Loại phòng'], list) and row['Loại phòng'] else (str(row['Loại phòng']) if pd.notna(row.get('Loại phòng')) else '')
                     nothat_text = list_to_text(row.get('Nội Thất'))
                     tienich_text = list_to_text(row.get('Tiện ích'))
+                    loai_text = list_to_text(row.get('Loại phòng'))
                     ngay_text = row[DATE_COL].strftime("%d/%m/%Y") if pd.notna(row.get(DATE_COL)) else ''
             
                     # Create shareable text - ĐÃ THÊM HOA HỒNG
@@ -1341,6 +1348,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
