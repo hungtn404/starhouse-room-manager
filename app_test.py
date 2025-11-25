@@ -8,67 +8,6 @@ import streamlit as st
 import pandas as pd
 import base64
 
-import streamlit as st
-import gspread
-from google.oauth2.service_account import Credentials
-
-try:
-    creds_dict = st.secrets["gcp_service_account"]
-    scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-    creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
-    client = gspread.authorize(creds)
-
-    sheet_id = st.secrets["gsheet"]["sheet_id"]
-    sh = client.open_by_key(sheet_id)
-    st.success(f"✅ Đã mở Sheet: {sh.title}")
-
-    try:
-        ws = sh.worksheet("data")  # hoặc SHEET_NAME
-        st.success(f"✅ Worksheet 'data' đã load")
-        st.write("Worksheet info:", ws.id, ws.title, ws.row_count, ws.col_count)
-    except Exception as e:
-        st.error(f"❌ Không tìm thấy worksheet: {e}")
-
-except Exception as e:
-    st.error(f"❌ Kết nối thất bại: {e}")
-
-try:
-    data_list = ws.get_all_records()
-    st.success(f"✅ Lấy data raw OK, số bản ghi: {len(data_list)}")
-    if len(data_list) > 0:
-        st.write(data_list[:5])  # hiển thị 5 bản ghi đầu
-except Exception as e:
-    st.error(f"❌ Lỗi get_all_records(): {e}")
-try:
-    df = pd.DataFrame(data_list)
-    st.success(f"✅ Chuyển sang DataFrame OK, shape: {df.shape}")
-    st.write(df.head())  # hiển thị 5 dòng đầu
-except Exception as e:
-    st.error(f"❌ Lỗi khi chuyển DataFrame: {e}")
-LIST_COLS = ["Loại phòng", "Nội Thất", "Tiện ích"]
-
-for col in LIST_COLS:
-    try:
-        if col in df.columns:
-            df[col] = df[col].apply(lambda x: json.loads(x) if isinstance(x, str) and x.startswith("[") else [])
-        st.success(f"✅ Decode column {col} OK")
-    except Exception as e:
-        st.error(f"❌ Lỗi decode column {col}: {e}")
-DATE_COL = "Ngày trống"
-try:
-    if DATE_COL in df.columns:
-        df[DATE_COL] = pd.to_datetime(df[DATE_COL], errors="coerce").dt.date
-    st.success(f"✅ Parse ngày '{DATE_COL}' OK")
-except Exception as e:
-    st.error(f"❌ Lỗi parse ngày: {e}")
-expected_cols = ["ID", "Số nhà", "Đường", "Phường", "Quận", "Giá", "Cửa sổ",
-                 "Điện", "Nước", "Dịch vụ", "Xe", "Giặt chung", "Ghi chú", "Hoa hồng", "Ngày tạo"] + LIST_COLS
-
-for col in expected_cols:
-    if col not in df.columns:
-        st.warning(f"⚠️ Cột thiếu: {col}")
-    else:
-        st.write(f"{col}: {df[col].dtype}")
 
 
 # DANH SÁCH TÀI KHOẢN NHÂN VIÊN
@@ -341,6 +280,72 @@ def save_data(df):
     else:
         save_data_to_excel(df)
         load_data.clear()
+
+def load_data_from_gsheet_safe():
+    """
+    Load worksheet từ Google Sheet và chuyển sang DataFrame.
+    Log chi tiết từng bước để debug trên Cloud.
+    """
+    try:
+        st.info("🔹 Bước 1: Kết nối Google Sheet...")
+        sh, ws = connect_gsheet()
+        st.success("✅ Kết nối thành công!")
+
+        st.info("🔹 Bước 2: Lấy dữ liệu từ worksheet...")
+        df = get_as_dataframe(ws, evaluate_formulas=True, header=0, usecols=None).fillna(pd.NA)
+        st.write("📄 Dữ liệu ban đầu từ Sheet (5 dòng đầu):", df.head())
+
+        if df is None or df.empty:
+            st.warning("⚠️ Sheet rỗng, tạo DataFrame trống với các cột mặc định.")
+            cols = ["ID", "Số nhà", "Đường", "Phường", "Quận", "Giá"] + LIST_COLS + [DATE_COL,
+                    "Cửa sổ", "Điện", "Nước", "Dịch vụ", "Xe", "Giặt chung", "Ghi chú", "Hoa hồng", "Ngày tạo"]
+            df = pd.DataFrame(columns=cols)
+            st.write("📄 DataFrame trống:", df.head())
+
+        st.info("🔹 Bước 3: Strip column names...")
+        df.columns = df.columns.str.strip()
+        st.write("📄 Các cột hiện tại:", df.columns.tolist())
+
+        st.info("🔹 Bước 4: Decode các cột list...")
+        for col in LIST_COLS:
+            if col in df.columns:
+                try:
+                    df[col] = df[col].apply(lambda x: _decode_list_field(x))
+                    st.success(f"✅ Decode cột '{col}' thành công")
+                except Exception as e:
+                    st.error(f"❌ Lỗi decode cột '{col}': {e}")
+                    df[col] = [[] for _ in range(len(df))]
+            else:
+                st.warning(f"⚠️ Cột '{col}' không có trong Sheet, tạo trống")
+                df[col] = [[] for _ in range(len(df))]
+
+        st.info(f"🔹 Bước 5: Parse cột ngày '{DATE_COL}'...")
+        if DATE_COL in df.columns:
+            try:
+                df[DATE_COL] = pd.to_datetime(df[DATE_COL], errors="coerce").dt.date
+                st.success(f"✅ Parse cột '{DATE_COL}' thành công")
+            except Exception as e:
+                st.error(f"❌ Lỗi parse cột '{DATE_COL}': {e}")
+        else:
+            st.warning(f"⚠️ Cột '{DATE_COL}' không tồn tại, tạo trống")
+            df[DATE_COL] = pd.NaT
+
+        st.info("🔹 Bước 6: Đảm bảo các cột mặc định tồn tại...")
+        expected_cols = ["ID", "Số nhà", "Đường", "Phường", "Quận", "Giá", "Cửa sổ",
+                         "Điện", "Nước", "Dịch vụ", "Xe", "Giặt chung", "Ghi chú", "Hoa hồng", "Ngày tạo"]
+        for c in expected_cols:
+            if c not in df.columns:
+                st.warning(f"⚠️ Cột '{c}' không tồn tại, tạo trống")
+                df[c] = pd.NA
+
+        st.success("✅ DataFrame đã sẵn sàng!")
+        st.write("📄 DataFrame cuối cùng (5 dòng đầu):", df.head())
+        return df
+
+    except Exception as e:
+        st.error(f"❌ Lỗi tổng thể khi load Google Sheet: {e}")
+        return pd.DataFrame()
+
 
 # -----------------------
 # UI Main
@@ -1387,6 +1392,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
