@@ -105,56 +105,37 @@ def gsheet_enabled():
         return False
 
 def connect_gsheet():
-    """
-    Kết nối Google Sheet và trả về tuple (Spreadsheet, Worksheet).
-    Tạo worksheet nếu chưa tồn tại.
-    """
+    """Return gspread.Spreadsheet and Worksheet objects (worksheet named SHEET_NAME)."""
     if not GS_AVAILABLE:
-        raise RuntimeError("gspread hoặc google libs chưa được cài đặt.")
+        raise RuntimeError("gspread or google libs not installed.")
 
+    creds_dict = st.secrets["gcp_service_account"]
+    scope = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
+    creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
+
+    client = gspread.authorize(creds)
+
+    # prefer sheet_id, else sheet_url
+    sheet_id = st.secrets["gsheet"].get("sheet_id", None) if "gsheet" in st.secrets else None
+    sheet_url = st.secrets["gsheet"].get("sheet_url", None) if "gsheet" in st.secrets else None
+
+    if sheet_id:
+        sh = client.open_by_key(sheet_id)
+    elif sheet_url:
+        sh = client.open_by_url(sheet_url)
+    else:
+        raise RuntimeError("gsheet.sheet_id or sheet_url not found in secrets.")
+
+    # get or create worksheet
     try:
-        st.info("🔹 Kết nối Google Sheet...")
-        creds_dict = st.secrets.get("gcp_service_account")
-        if not creds_dict:
-            raise RuntimeError("Không tìm thấy 'gcp_service_account' trong st.secrets")
-
-        scope = [
-            "https://www.googleapis.com/auth/spreadsheets",
-            "https://www.googleapis.com/auth/drive"
-        ]
-        creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
-        client = gspread.authorize(creds)
-        st.success("✅ Xác thực thành công với Google Sheets API")
-
-        # Lấy sheet_id ưu tiên, nếu không có dùng sheet_url
-        gsheet_conf = st.secrets.get("gsheet", {})
-        sheet_id = gsheet_conf.get("sheet_id")
-        sheet_url = gsheet_conf.get("sheet_url")
-
-        if sheet_id:
-            sh = client.open_by_key(sheet_id)
-            st.success(f"✅ Mở Spreadsheet bằng sheet_id: {sheet_id}")
-        elif sheet_url:
-            sh = client.open_by_url(sheet_url)
-            st.success(f"✅ Mở Spreadsheet bằng sheet_url")
-        else:
-            raise RuntimeError("Không tìm thấy sheet_id hoặc sheet_url trong secrets")
-
-        # Lấy worksheet theo SHEET_NAME, nếu không tồn tại thì tạo mới
-        try:
-            ws = sh.worksheet(SHEET_NAME)
-            st.success(f"✅ Worksheet '{SHEET_NAME}' tồn tại, mở thành công")
-        except gspread.WorksheetNotFound:
-            st.warning(f"⚠️ Worksheet '{SHEET_NAME}' không tồn tại, tạo mới...")
-            ws = sh.add_worksheet(title=SHEET_NAME, rows="1000", cols="50")
-            st.success(f"✅ Worksheet '{SHEET_NAME}' đã được tạo")
-
-        return sh, ws
-
-    except Exception as e:
-        st.error(f"❌ Lỗi kết nối Google Sheet: {e}")
-        raise
-
+        ws = sh.worksheet(SHEET_NAME)
+    except Exception:
+        ws = sh.add_worksheet(title=SHEET_NAME, rows="1000", cols="50")
+    return sh, ws
+    
 def load_data_from_gsheet():
     """Load worksheet into DataFrame, decode JSON list columns and parse date"""
     sh, ws = connect_gsheet()
@@ -1343,6 +1324,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
