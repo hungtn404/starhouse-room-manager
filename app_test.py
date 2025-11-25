@@ -7,8 +7,30 @@ import gspread
 import streamlit as st
 import pandas as pd
 import base64
-import traceback
-st.text(traceback.format_exc())
+import streamlit as st
+import gspread
+from google.oauth2.service_account import Credentials
+
+try:
+    creds_dict = st.secrets["gcp_service_account"]
+    scope = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+    creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
+    client = gspread.authorize(creds)
+
+    sheet_id = st.secrets["gsheet"]["sheet_id"]
+    sh = client.open_by_key(sheet_id)
+    st.success(f"✅ Đã mở Sheet: {sh.title}")
+
+    try:
+        ws = sh.worksheet("data")  # hoặc SHEET_NAME
+        st.success(f"✅ Worksheet 'data' đã load")
+        st.write("Worksheet info:", ws.id, ws.title, ws.row_count, ws.col_count)
+    except Exception as e:
+        st.error(f"❌ Không tìm thấy worksheet: {e}")
+
+except Exception as e:
+    st.error(f"❌ Kết nối thất bại: {e}")
+
 
 # DANH SÁCH TÀI KHOẢN NHÂN VIÊN
 # ============================
@@ -1326,6 +1348,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
