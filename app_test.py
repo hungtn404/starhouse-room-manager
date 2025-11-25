@@ -254,14 +254,30 @@ def save_data_to_excel(df):
 # -----------------------
 @st.cache_data(ttl=600)
 def load_data():
-    if gsheet_enabled():
-        try:
-            return load_data_from_gsheet()
-        except Exception as e:
-            st.warning(f"Không thể kết nối Google Sheets — fallback sang Excel. Lỗi: {e}")
-            return load_data_from_excel()
-    else:
-        return load_data_from_excel()
+    """
+    Load dữ liệu Google Sheet bằng biến môi trường GSPREAD_KEY.
+    Trả về DataFrame.
+    """
+    try:
+        # Lấy JSON từ biến môi trường
+        key_dict = json.loads(os.environ["GSPREAD_KEY"])
+        gc = gspread.service_account_from_dict(key_dict)
+        
+        # Mở Google Sheet theo tên hoặc URL
+        sh = gc.open("Tên Sheet của bạn").sheet1  # hoặc .worksheet("Tên Worksheet")
+        
+        # Lấy tất cả dữ liệu
+        data = sh.get_all_records()
+        
+        # Chuyển sang DataFrame
+        df = pd.DataFrame(data)
+        return df
+    except KeyError:
+        st.error("❌ Không tìm thấy biến môi trường GSPREAD_KEY. Vui lòng thêm key JSON vào Secrets.")
+        return pd.DataFrame()  # trả về DataFrame rỗng
+    except Exception as e:
+        st.error(f"❌ Lỗi khi kết nối Google Sheet: {e}")
+        return pd.DataFrame()
 
 def save_data(df):
     if gsheet_enabled():
@@ -1321,4 +1337,5 @@ elif menu == 'CTV':
 
 # footer
 st.markdown("---")
+
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
