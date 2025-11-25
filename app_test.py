@@ -45,6 +45,31 @@ try:
     st.write(df.head())  # hiển thị 5 dòng đầu
 except Exception as e:
     st.error(f"❌ Lỗi khi chuyển DataFrame: {e}")
+LIST_COLS = ["Loại phòng", "Nội Thất", "Tiện ích"]
+
+for col in LIST_COLS:
+    try:
+        if col in df.columns:
+            df[col] = df[col].apply(lambda x: json.loads(x) if isinstance(x, str) and x.startswith("[") else [])
+        st.success(f"✅ Decode column {col} OK")
+    except Exception as e:
+        st.error(f"❌ Lỗi decode column {col}: {e}")
+DATE_COL = "Ngày trống"
+try:
+    if DATE_COL in df.columns:
+        df[DATE_COL] = pd.to_datetime(df[DATE_COL], errors="coerce").dt.date
+    st.success(f"✅ Parse ngày '{DATE_COL}' OK")
+except Exception as e:
+    st.error(f"❌ Lỗi parse ngày: {e}")
+expected_cols = ["ID", "Số nhà", "Đường", "Phường", "Quận", "Giá", "Cửa sổ",
+                 "Điện", "Nước", "Dịch vụ", "Xe", "Giặt chung", "Ghi chú", "Hoa hồng", "Ngày tạo"] + LIST_COLS
+
+for col in expected_cols:
+    if col not in df.columns:
+        st.warning(f"⚠️ Cột thiếu: {col}")
+    else:
+        st.write(f"{col}: {df[col].dtype}")
+
 
 # DANH SÁCH TÀI KHOẢN NHÂN VIÊN
 # ============================
@@ -1362,6 +1387,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
