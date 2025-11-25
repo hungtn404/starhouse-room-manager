@@ -670,7 +670,7 @@ if menu == "Admin":
 
             edited_df = st.data_editor(
                 df,
-                use_container_width=True,
+                width='stretch',
                 hide_index=True,
                 key="room_table",
                 column_config={
@@ -693,7 +693,7 @@ if menu == "Admin":
             # Hiện bảng kết quả
             if not filtered_df.empty:
                 st.markdown("### 📋 Kết quả lọc:")
-                st.dataframe(filtered_df, use_container_width=True)
+                st.dataframe(filtered_df, width='stretch')
 
                 # Chọn ID để upload ảnh
                 list_ids = filtered_df["ID"].tolist()
@@ -1102,7 +1102,7 @@ elif menu == "Nhân viên":
                     if os.path.exists(url):
                         with cols[i % 3]:
                             # Hiển thị ảnh
-                            st.image(url, caption=os.path.basename(url), use_container_width=True)
+                            st.image(url, caption=os.path.basename(url), width=True)
                 
                             # Checkbox chọn ảnh riêng lẻ
                             selected = select_all or st.checkbox("Chọn ảnh", key=f"{ma_phong}_{i}")
@@ -1283,7 +1283,7 @@ elif menu == 'CTV':
                     if os.path.exists(url):
                         with cols[i % 3]:
                             # Hiển thị ảnh
-                            st.image(url, caption=os.path.basename(url), use_container_width=True)
+                            st.image(url, caption=os.path.basename(url), width='stretch')
                 
                             # Checkbox chọn ảnh riêng lẻ
                             selected = select_all or st.checkbox("Chọn ảnh", key=f"{ma_phong}_{i}")
@@ -1324,6 +1324,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
