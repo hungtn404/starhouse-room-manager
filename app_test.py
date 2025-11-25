@@ -344,7 +344,7 @@ def save_data(df):
         save_data_to_excel(df)
         load_data.clear()
 
-
+load_data_from_gsheet_safe()
 # -----------------------
 # UI Main
 # -----------------------
@@ -1390,6 +1390,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
