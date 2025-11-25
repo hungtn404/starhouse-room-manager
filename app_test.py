@@ -5,6 +5,13 @@ import os
 import json
 import pandas as pd
 import streamlit as st
+try:
+    import gspread
+    from google.oauth2.service_account import Credentials
+    st.success("✅ gspread và google libs đã load OK")
+except Exception as e:
+    st.error(f"❌ Không load được gspread/google libs: {e}")
+
 import base64
 
 # DANH SÁCH TÀI KHOẢN NHÂN VIÊN
@@ -1323,6 +1330,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
