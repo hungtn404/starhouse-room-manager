@@ -5,7 +5,6 @@ import os
 import json
 import pandas as pd
 import streamlit as st
-st.write(st.secrets)
 import base64
 
 # DANH SÁCH TÀI KHOẢN NHÂN VIÊN
@@ -1324,6 +1323,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
