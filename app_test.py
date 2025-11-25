@@ -7,6 +7,30 @@ import pandas as pd
 import streamlit as st
 import base64
 
+
+def connect_gsheet():
+    creds_dict = st.secrets["gcp_service_account"]
+    scope = ["https://www.googleapis.com/auth/spreadsheets",
+             "https://www.googleapis.com/auth/drive"]
+    creds = Credentials.from_service_account_info(creds_dict, scopes=scope)
+    client = gspread.authorize(creds)
+
+    sheet_id = st.secrets["gsheet"]["sheet_id"]
+    sh = client.open_by_key(sheet_id)
+
+    try:
+        ws = sh.worksheet("data")
+    except gspread.exceptions.WorksheetNotFound:
+        ws = sh.add_worksheet(title="data", rows="1000", cols="50")
+    return ws
+
+def load_data():
+    ws = connect_gsheet()
+    df = get_as_dataframe(ws, evaluate_formulas=True, header=0)
+    return df
+
+st.dataframe(load_data())
+
 # DANH SÁCH TÀI KHOẢN NHÂN VIÊN
 # ============================
 ACCOUNTS = {
@@ -1323,4 +1347,5 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
