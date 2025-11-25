@@ -91,6 +91,23 @@ def generate_id(df):
         return len(df) + 1
 
 # -----------------------
+# Helpers: Convert list/array to safe display text
+# -----------------------
+def list_to_text(x):
+    """
+    Chuyển list, numpy array, pandas Series thành chuỗi,
+    trả về '' nếu rỗng hoặc None.
+    """
+    import numpy as np
+    if isinstance(x, list) and len(x) > 0:
+        return ", ".join(x)
+    if isinstance(x, (np.ndarray, pd.Series)) and x.size > 0:
+        return ", ".join(x.tolist())
+    if pd.notna(x):
+        return str(x)
+    return ""
+
+# -----------------------
 # Google Sheets helpers
 # -----------------------
 def gsheet_enabled():
@@ -886,9 +903,9 @@ if menu == "Admin":
                     # FORMATTING FOR DISPLAY AND SHARE BUTTON
                     gia_text = f"{int(row['Giá']):,} VNĐ" if pd.notna(row.get('Giá')) else ""
                     loai_text = ", ".join(row['Loại phòng']) if isinstance(row['Loại phòng'], list) and row['Loại phòng'] else (str(row['Loại phòng']) if pd.notna(row.get('Loại phòng')) else '')
-                    nothat_text = ", ".join(row['Nội Thất']) if isinstance(row['Nội Thất'], list) and row['Nội Thất'] else (str(row['Nội Thất']) if pd.notna(row.get('Nội Thất')) else '')
-                    tienich_text = ", ".join(row['Tiện ích']) if isinstance(row['Tiện ích'], list) and row['Tiện ích'] else (str(row['Tiện ích']) if pd.notna(row.get('Tiện ích')) else '')
-                    ngay_text = row[DATE_COL].strftime("%d/%m/%Y") if pd.notna(row.get(DATE_COL)) else "Không có"
+                    nothat_text = list_to_text(row.get('Nội Thất'))
+                    tienich_text = list_to_text(row.get('Tiện ích'))
+                    ngay_text = row[DATE_COL].strftime("%d/%m/%Y") if pd.notna(row.get(DATE_COL)) else ''
             
                     # Create shareable text - ĐÃ THÊM HOA HỒNG
                     share_text = f"""{row.get('Số nhà','')} {row.get('Đường','')}, {row.get('Phường','')}, {row.get('Quận','')}
@@ -1324,6 +1341,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
