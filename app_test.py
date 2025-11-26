@@ -1126,7 +1126,7 @@ elif menu == "Nhân viên":
                     if os.path.exists(url):
                         with cols[i % 3]:
                             # Hiển thị ảnh
-                            st.image(url, caption=os.path.basename(url), width=True)
+                            st.image(url, caption=os.path.basename(url))
                 
                             # Checkbox chọn ảnh riêng lẻ
                             selected = select_all or st.checkbox("Chọn ảnh", key=f"{ma_phong}_{i}")
@@ -1348,6 +1348,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
