@@ -1093,9 +1093,9 @@ elif menu == "Nhân viên":
             ma_phong = row.get('Mã phòng')
             # FORMATTING FOR DISPLAY AND SHARE BUTTON
             gia_text = f"{int(row['Giá']):,} VNĐ" if pd.notna(row.get('Giá')) else ""
-            loai_text = ", ".join(row['Loại phòng']) if isinstance(row['Loại phòng'], list) and row['Loại phòng'] else (str(row['Loại phòng']) if pd.notna(row.get('Loại phòng')) else '')
-            nothat_text = ", ".join(row['Nội Thất']) if isinstance(row['Nội Thất'], list) and row['Nội Thất'] else (str(row['Nội Thất']) if pd.notna(row.get('Nội Thất')) else '')
-            tienich_text = ", ".join(row['Tiện ích']) if isinstance(row['Tiện ích'], list) and row['Tiện ích'] else (str(row['Tiện ích']) if pd.notna(row.get('Tiện ích')) else '')
+            nothat_text = list_to_text(row.get('Nội Thất'))
+            tienich_text = list_to_text(row.get('Tiện ích'))
+            loai_text = list_to_text(row.get('Loại phòng'))
             ngay_text = row[DATE_COL].strftime("%d/%m/%Y") if pd.notna(row.get(DATE_COL)) else "Không có"
             
             # Create shareable text - ĐÃ THÊM HOA HỒNG
@@ -1274,9 +1274,9 @@ elif menu == 'CTV':
             ma_phong = row.get('Mã phòng')
             # FORMATTING FOR DISPLAY AND SHARE BUTTON
             gia_text = f"{int(row['Giá']):,} VNĐ" if pd.notna(row.get('Giá')) else ""
-            loai_text = ", ".join(row['Loại phòng']) if isinstance(row['Loại phòng'], list) and row['Loại phòng'] else (str(row['Loại phòng']) if pd.notna(row.get('Loại phòng')) else '')
-            nothat_text = ", ".join(row['Nội Thất']) if isinstance(row['Nội Thất'], list) and row['Nội Thất'] else (str(row['Nội Thất']) if pd.notna(row.get('Nội Thất')) else '')
-            tienich_text = ", ".join(row['Tiện ích']) if isinstance(row['Tiện ích'], list) and row['Tiện ích'] else (str(row['Tiện ích']) if pd.notna(row.get('Tiện ích')) else '')
+            nothat_text = list_to_text(row.get('Nội Thất'))
+            tienich_text = list_to_text(row.get('Tiện ích'))
+            loai_text = list_to_text(row.get('Loại phòng'))
             ngay_text = row[DATE_COL].strftime("%d/%m/%Y") if pd.notna(row.get(DATE_COL)) else "Không có"
             
             # Create shareable text - ĐÃ THÊM HOA HỒNG
@@ -1348,6 +1348,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
