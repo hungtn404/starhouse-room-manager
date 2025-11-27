@@ -593,7 +593,7 @@ if menu == "Admin":
                 nuoc = st.selectbox("Giá nước", ["100K/người", "150K/người", "60K/người", "70K/người", "80K/người", "90K/người", "20K/khối", "23K/khối", "Cập nhật"], key="nuoc_key")
                 dich_vu = st.selectbox("Dịch vụ", ["100K/phòng", "50K/phòng", "120K/phòng", "150K/phòng", "180K/phòng", "200K/phòng", "300K/phòng", "70K/người", "150K/người", "100K/người", "Cập nhật"], key="dich_vu_key")
                 xe = st.selectbox("Xe", ["100K/xe", "50K/xe", "80K/chiếc", "90K/chiếc", "110K/xe", "120K/xe", "130K/xe", "150K/xe", "200K/xe", "FREE", "Cập nhật"], key="xe_key")
-                giat_chung = st.selectbox("Giặt chung", ["10K/lần", "15K/lần", "20K/lần", "50K/người", "80K/người", "Không"], key="giat_chung_key")
+                giat_chung = st.selectbox("Giặt chung", ["10K/lần", "15K/lần", "20K/lần", "50K/người", "80K/người", "150K/phòng", "Không"], key="giat_chung_key")
                 ghi_chu = st.text_area("Ghi chú (tùy chọn)", key="ghi_chu_key")
                 hoa_hong = st.text_input("Hoa hồng", key="hoa_hong_key") 
                 
@@ -1348,6 +1348,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
