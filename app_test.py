@@ -1232,52 +1232,52 @@ elif menu == "Nhân viên":
                     </script>
                 """, unsafe_allow_html=True)
 
-            if st.session_state.modal_index is not None:
-
-            cur = st.session_state.modal_index
-        
-            # Tải ảnh gốc
-            img_data = requests.get(image_urls[cur]).content
-            img_base64 = base64.b64encode(img_data).decode()
-        
-            # Render modal HTML
-            st.markdown(
-                f"""
-                <div class="modal-bg" onclick="window.parent.postMessage({{'type':'close-modal'}}, '*')">
-                    <img class="modal-img" src="data:image/jpeg;base64,{img_base64}">
-                    <div class="modal-nav modal-prev"
-                         onclick="event.stopPropagation(); window.parent.postMessage({{'type':'prev-img'}}, '*')">&#10094;</div>
-                    <div class="modal-nav modal-next"
-                         onclick="event.stopPropagation(); window.parent.postMessage({{'type':'next-img'}}, '*')">&#10095;</div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-        
-            # JS nhận nav sự kiện
-            st.markdown("""
-                <script>
-                window.addEventListener("message", (event) => {
-                    if (event.data.type === "close-modal") {
-                        window.parent.postMessage({type:'streamlit:setComponentValue', value: null}, '*');
-                    }
-                    if (event.data.type === "prev-img") {
-                        window.parent.postMessage({type:'streamlit:setComponentValue', value: "prev"}, '*');
-                    }
-                    if (event.data.type === "next-img") {
-                        window.parent.postMessage({type:'streamlit:setComponentValue', value: "next"}, '*');
-                    }
-                });
-                </script>
-            """, unsafe_allow_html=True)
-        
-            # Xử lý điều hướng
-            if st.session_state.modal_index == "prev":
-                st.session_state.modal_index = (cur - 1) % len(image_urls)
-                st.rerun()
-            elif st.session_state.modal_index == "next":
-                st.session_state.modal_index = (cur + 1) % len(image_urls)
-                st.rerun()
+                if st.session_state.modal_index is not None:
+    
+                cur = st.session_state.modal_index
+            
+                # Tải ảnh gốc
+                img_data = requests.get(image_urls[cur]).content
+                img_base64 = base64.b64encode(img_data).decode()
+            
+                # Render modal HTML
+                st.markdown(
+                    f"""
+                    <div class="modal-bg" onclick="window.parent.postMessage({{'type':'close-modal'}}, '*')">
+                        <img class="modal-img" src="data:image/jpeg;base64,{img_base64}">
+                        <div class="modal-nav modal-prev"
+                             onclick="event.stopPropagation(); window.parent.postMessage({{'type':'prev-img'}}, '*')">&#10094;</div>
+                        <div class="modal-nav modal-next"
+                             onclick="event.stopPropagation(); window.parent.postMessage({{'type':'next-img'}}, '*')">&#10095;</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+            
+                # JS nhận nav sự kiện
+                st.markdown("""
+                    <script>
+                    window.addEventListener("message", (event) => {
+                        if (event.data.type === "close-modal") {
+                            window.parent.postMessage({type:'streamlit:setComponentValue', value: null}, '*');
+                        }
+                        if (event.data.type === "prev-img") {
+                            window.parent.postMessage({type:'streamlit:setComponentValue', value: "prev"}, '*');
+                        }
+                        if (event.data.type === "next-img") {
+                            window.parent.postMessage({type:'streamlit:setComponentValue', value: "next"}, '*');
+                        }
+                    });
+                    </script>
+                """, unsafe_allow_html=True)
+            
+                # Xử lý điều hướng
+                if st.session_state.modal_index == "prev":
+                    st.session_state.modal_index = (cur - 1) % len(image_urls)
+                    st.rerun()
+                elif st.session_state.modal_index == "next":
+                    st.session_state.modal_index = (cur + 1) % len(image_urls)
+                    st.rerun()
 
 elif menu == 'CTV':
     st.subheader("Nhân viên — Lọc & Xem")
@@ -1475,6 +1475,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
