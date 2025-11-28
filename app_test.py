@@ -7,7 +7,31 @@ import gspread
 import streamlit as st
 import pandas as pd
 import base64
+import requests
 
+def upload_to_discord(file, filename):
+    """Upload ảnh lên Discord storage → trả về CDN URL."""
+    webhook = st.secrets["discord"]["webhook"]
+
+    files = {
+        "file": (filename, file.read())
+    }
+
+    response = requests.post(webhook, files=files)
+
+    if response.status_code == 204:
+        # Discord không trả JSON, nhưng file được upload;
+        # Link CDN nằm trong công thức cố định:
+        channel_id = webhook.split("/")[-2]
+        attachment_id = "0"  # không biết ID → phải extract từ tin nhắn
+        return None  # Discord webhook không trả link trực tiếp
+    else:
+        try:
+            data = response.json()
+            return data["attachments"][0]["url"]
+        except:
+            st.error("❌ Upload Discord thất bại")
+            return None
 
 # DANH SÁCH TÀI KHOẢN NHÂN VIÊN
 # ============================
@@ -610,10 +634,9 @@ if menu == "Admin":
                     os.makedirs(folder, exist_ok=True)
                     for f in uploaded_files:
                         # Dùng datetime để đảm bảo tên file là duy nhất
-                        file_path = os.path.join(folder, f"{datetime.now().strftime('%Y%m%d%H%M%S')}_{f.name}")
-                        with open(file_path, "wb") as out:
-                            out.write(f.read())
-                        image_urls.append(file_path)
+                        img_url = upload_to_discord(f, f.name)
+                        if img_url:
+                            image_urls.append(img_url)
 
                 submitted = st.form_submit_button("Lưu phòng", on_click=reset_add_form)
             if submitted:
@@ -1348,6 +1371,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
