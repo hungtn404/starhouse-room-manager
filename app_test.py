@@ -1402,47 +1402,57 @@ elif menu == 'CTV':
             st.write(f"**Hoa hồng:** {row.get('Hoa hồng','')}") # 👉 HIỂN THỊ HOA HỒNG RIÊNG
             st.write(f"**Ghi chú:** {row.get('Ghi chú','')}")
             
-            # 👉 HIỂN THỊ ẢNH TỪ GOOGLE CLOUD STORAGE
+            # 👉 HIỂN THỊ ẢNH GCS (ĐẸP – 3 ẢNH / 1 HÀNG)
             image_urls = row.get('Hình ảnh')
             
             if image_urls and isinstance(image_urls, list) and len(image_urls) > 0:
-                st.markdown("##### 📸 Hình ảnh phòng (Google Cloud Storage)")
-                
-                # Chọn tất cả
-                select_all = st.checkbox("✅ Chọn tất cả ảnh", key=f"{ma_phong}_select_all")
-                
-                cols = st.columns(min(len(image_urls), 3))
-                selected_files = []
-                
+            
+                # CSS đẹp cho gallery
+                st.markdown("""
+                    <style>
+                        .img-grid {
+                            display: grid;
+                            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+                            gap: 15px;
+                            margin-top: 10px;
+                        }
+                        .img-card {
+                            position: relative;
+                            overflow: hidden;
+                            border-radius: 12px;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                            cursor: pointer;
+                            transition: transform .2s ease-in-out;
+                            height: 160px;
+                        }
+                        .img-card:hover {
+                            transform: scale(1.03);
+                        }
+                        .img-card img {
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                        }
+                    </style>
+                """, unsafe_allow_html=True)
+            
+                st.markdown("##### 📸 Hình ảnh phòng")
+            
+                # Bắt đầu hiển thị gallery
+                st.markdown("<div class='img-grid'>", unsafe_allow_html=True)
+            
                 for i, url in enumerate(image_urls):
-                    with cols[i % 3]:
-                        # HIỂN THỊ ẢNH TRỰC TIẾP TỪ GOOGLE STORAGE
-                        st.image(url, caption=f"Ảnh {i+1}")
-            
-                        selected = select_all or st.checkbox("Chọn ảnh", key=f"{ma_phong}_{i}")
-                        if selected:
-                            selected_files.append(url)
-            
-                # NÚT TẢI ZIP
-                if selected_files:
-                    import requests
-                    from io import BytesIO
-                    from zipfile import ZipFile
-            
-                    zip_buffer = BytesIO()
-                    with ZipFile(zip_buffer, "w") as zip_file:
-                        for idx, url in enumerate(selected_files):
-                            img_data = requests.get(url).content
-                            zip_file.writestr(f"image_{idx+1}.jpg", img_data)
-            
-                    zip_buffer.seek(0)
-            
-                    st.download_button(
-                        label="💾 Tải về ảnh đã chọn",
-                        data=zip_buffer,
-                        file_name=f"phong_{ma_phong}_images.zip",
-                        mime="application/zip"
+                    st.markdown(
+                        f"""
+                        <div class="img-card">
+                            <img src="{url}" alt="image_{i}">
+                        </div>
+                        """,
+                        unsafe_allow_html=True
                     )
+            
+                st.markdown("</div>", unsafe_allow_html=True)
+
             
             st.markdown("---")
 
@@ -1459,6 +1469,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
