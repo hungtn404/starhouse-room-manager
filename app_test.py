@@ -1476,8 +1476,7 @@ elif menu == 'CTV':
                         if st.button(f"📷 Ảnh {i+1}", key=f"open_{ma_phong}_{i}"):
                             st.session_state.modal_index = i
             
-                        st.markdown(
-                            f"""
+                        st.markdown("""
                             <img src="{url}" class="img-thumb" onclick="window.parent.postMessage({{'index': {i}}}, '*')">
                             <div class='img-caption'>Ảnh {i+1}</div>
                             """,
@@ -1511,8 +1510,7 @@ elif menu == 'CTV':
                 img_base64 = base64.b64encode(img_data).decode()
             
                 # HTML modal
-                st.markdown(
-                    f"""
+                st.markdown("""
                     <div class="modal-bg" onclick="window.parent.postMessage({{'close': true}}, '*')">
                         <img class="modal-img" src="data:image/jpeg;base64,{img_base64}">
                         <div class="modal-nav modal-prev"
@@ -1567,6 +1565,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
