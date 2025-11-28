@@ -7,22 +7,17 @@ import gspread
 import streamlit as st
 import pandas as pd
 import base64
-from PIL import Image
-import requests
-from io import BytesIO
+from google.cloud import storage
 
-def upload_to_discord_bot(file_path, channel_id, bot_token):
-    url = f"https://discord.com/api/v10/channels/{channel_id}/messages"
-    headers = {
-        "Authorization": f"Bot {bot_token}"
-    }
-    files = {"file": (file.name, file.read())}
-    resp = requests.post(url, headers=headers, files=files)
-    if resp.status_code == 200:
-        return resp.json()["attachments"][0]["url"]
-    else:
-        print(resp.text)
-        return None
+def upload_to_gcs(bucket_name, file_data, file_name):
+    client = storage.Client.from_service_account_info(
+        st.secrets["gcp_service_account"]
+    )
+    bucket = client.bucket(bucket_name)
+    blob = bucket.blob(file_name)
+    blob.upload_from_file(file_data, content_type=file_data.type)
+    blob.make_public()
+    return blob.public_url
 
 # DANH SÁCH TÀI KHOẢN NHÂN VIÊN
 # ============================
@@ -612,9 +607,8 @@ if menu == "Admin":
                 ghi_chu = st.text_area("Ghi chú (tùy chọn)", key="ghi_chu_key")
                 hoa_hong = st.text_input("Hoa hồng", key="hoa_hong_key") 
                 
-                # --- Discord info ---
-                DISCORD_CHANNEL_ID = st.secrets["discord"]["channel_id"]
-                DISCORD_BOT_TOKEN = st.secrets["discord"]["bot_token"]
+                # --- GCS info ---
+                GCS_BUCKET_NAME = st.secrets["gcp"]["bucket_name"]
                 
                 # Upload hình ảnh
                 uploaded_files = st.file_uploader(
@@ -627,12 +621,15 @@ if menu == "Admin":
                 
                 if uploaded_files:
                     for f in uploaded_files:
-                        img_url = upload_to_discord_bot(f, DISCORD_CHANNEL_ID, DISCORD_BOT_TOKEN)
+                        import uuid
+                        unique_file_name = f"{uuid.uuid4()}_{f.name}"
+                        img_url = upload_to_gcs(GCS_BUCKET_NAME, f, unique_file_name)
                         if img_url:
                             image_urls.append(img_url)
                         else:
                             st.error(f"Không upload được ảnh: {f.name}")
-                
+                st.write("Ảnh đã upload:", image_urls)
+
                 submitted = st.form_submit_button("Lưu phòng", on_click=reset_add_form)
             if submitted:
                 # 1. Kiểm tra dữ liệu chung
@@ -1474,6 +1471,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
