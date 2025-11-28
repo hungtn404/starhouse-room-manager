@@ -1130,8 +1130,6 @@ elif menu == "Nhân viên":
             st.write(f"**Hoa hồng:** {row.get('Hoa hồng','')}") # 👉 HIỂN THỊ HOA HỒNG RIÊNG
             st.write(f"**Ghi chú:** {row.get('Ghi chú','')}")
             
-            # 👉 HIỂN THỊ ẢNH DISCORD
-            # CSS đẹp
             st.markdown("""
                 <style>
                     .img-thumb {
@@ -1139,18 +1137,23 @@ elif menu == "Nhân viên":
                         transition: transform 0.2s ease-in-out;
                         cursor: pointer;
                         box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+                        width: 100%;
+                        height: 150px;
+                        object-fit: cover;
+                        margin-bottom: 5px;
                     }
-                    .img-thumb:hover {
-                        transform: scale(1.03);
+                    .img-caption {
+                        text-align: center;
+                        font-size: 13px;
+                        opacity: 0.8;
+                        margin-bottom: 15px;
                     }
             
                     /* MODAL */
                     .modal-bg {
                         position: fixed;
-                        top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
+                        top: 0; left: 0;
+                        width: 100%; height: 100%;
                         background: rgba(0,0,0,0.7);
                         backdrop-filter: blur(3px);
                         display: flex;
@@ -1173,15 +1176,16 @@ elif menu == "Nhân viên":
                         cursor: pointer;
                         padding: 10px;
                         z-index: 10000;
+                        user-select: none;
                     }
                     .modal-prev { left: 20px; }
                     .modal-next { right: 20px; }
                 </style>
             """, unsafe_allow_html=True)
-
+            
             image_urls = row.get('Hình ảnh')
             
-            # Modal state
+            # Khởi tạo modal_index nếu chưa có
             if "modal_index" not in st.session_state:
                 st.session_state.modal_index = None
             
@@ -1189,38 +1193,38 @@ elif menu == "Nhân viên":
                 st.markdown("##### 📸 Hình ảnh phòng (Gallery nâng cấp)")
             
                 cols = st.columns(3)
-                FIXED_HEIGHT = 220
-            
                 for i, url in enumerate(image_urls):
                     with cols[i % 3]:
+                        try:
+                            res = requests.get(url)
+                            img = Image.open(BytesIO(res.content))
             
-                        # Tải ảnh
-                        res = requests.get(url)
-                        img = Image.open(BytesIO(res.content))
+                            # Resize và crop để ảnh đều bằng nhau
+                            img = img.convert("RGB")
+                            img.thumbnail((300, 150), Image.ANTIALIAS)
+                            
+                            # Tạo canvas trắng 300x150, căn giữa ảnh
+                            canvas = Image.new('RGB', (300, 150), (255, 255, 255))
+                            w, h = img.size
+                            canvas.paste(img, ((300 - w) // 2, (150 - h) // 2))
             
-                        # Resize theo chiều cao đồng bộ
-                        w, h = img.size
-                        new_width = int(w * (FIXED_HEIGHT / h))
-                        img = img.resize((new_width, FIXED_HEIGHT))
+                            buf = BytesIO()
+                            canvas.save(buf, format="JPEG")
+                            img_base64 = base64.b64encode(buf.getvalue()).decode()
             
-                        # Encode sang byte để nhúng HTML
-                        buf = BytesIO()
-                        img.save(buf, format="JPEG")
-                        img_bytes = buf.getvalue()
-                        img_base64 = base64.b64encode(img_bytes).decode()
+                            st.markdown(
+                                f"""
+                                <img src="data:image/jpeg;base64,{img_base64}" 
+                                     class="img-thumb"
+                                     onclick="window.parent.postMessage({{'type': 'open-modal', 'index': {i}}}, '*')" />
+                                <div class="img-caption">Ảnh {i+1}</div>
+                                """,
+                                unsafe_allow_html=True
+                            )
+                        except Exception as e:
+                            st.error(f"Không tải được ảnh {i+1}")
             
-                        # Render thumb bằng HTML (tạo click event)
-                        st.markdown(
-                            f"""
-                            <img src="data:image/jpeg;base64,{img_base64}" 
-                                 class="img-thumb"
-                                 onclick="window.parent.postMessage({{'type': 'open-modal', 'index': {i}}}, '*')">
-                            <div style="text-align:center; font-size:13px; opacity:0.8">Ảnh {i+1}</div>
-                            """,
-                            unsafe_allow_html=True
-                        )
-            
-                # Listen event từ JS → mở modal
+                # Lắng nghe sự kiện mở modal
                 st.markdown("""
                     <script>
                         window.addEventListener("message", (event) => {
@@ -1231,18 +1235,24 @@ elif menu == "Nhân viên":
                         });
                     </script>
                 """, unsafe_allow_html=True)
-
-            # MODAL VIEW — HIỂN THỊ ẢNH LỚN
-            if st.session_state.modal_index is not None:
             
-                cur = st.session_state.modal_index  # <-- dòng này cần indent đúng
+            # Xử lý điều hướng modal trước khi lấy cur
+            if st.session_state.modal_index == "prev":
+                st.session_state.modal_index = (st.session_state.modal_index - 1) % len(image_urls)
+                st.experimental_rerun()
+            elif st.session_state.modal_index == "next":
+                st.session_state.modal_index = (st.session_state.modal_index + 1) % len(image_urls)
+                st.experimental_rerun()
+            
+            # MODAL VIEW — HIỂN THỊ ẢNH LỚN
+            if st.session_state.modal_index is not None and isinstance(st.session_state.modal_index, int):
+                cur = st.session_state.modal_index
                 img_url = image_urls[cur]
             
-                # Tải ảnh gốc từ Discord
+                # Lấy ảnh gốc
                 img_data = requests.get(img_url).content
                 img_base64 = base64.b64encode(img_data).decode()
             
-                # Hiển thị modal
                 st.markdown(
                     f"""
                     <div class="modal-bg" onclick="window.parent.postMessage({{'type':'close-modal'}}, '*')">
@@ -1256,7 +1266,6 @@ elif menu == "Nhân viên":
                     unsafe_allow_html=True
                 )
             
-                # JavaScript điều khiển modal action
                 st.markdown("""
                     <script>
                     window.addEventListener("message", (event) => {
@@ -1272,15 +1281,7 @@ elif menu == "Nhân viên":
                     });
                     </script>
                 """, unsafe_allow_html=True)
-            
-                # Điều hướng ảnh
-                if st.session_state.modal_index == "prev":
-                    st.session_state.modal_index = (cur - 1) % len(image_urls)
-                    st.rerun()
-            
-                elif st.session_state.modal_index == "next":
-                    st.session_state.modal_index = (cur + 1) % len(image_urls)
-                    st.rerun()
+    
 elif menu == 'CTV':
     st.subheader("Nhân viên — Lọc & Xem")
     st.info("Nhân viên chỉ có thể **lọc** và **xem ĐỊA CHỈ** của phòng. Không có quyền chỉnh sửa.")
@@ -1477,6 +1478,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
