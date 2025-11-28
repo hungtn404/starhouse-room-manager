@@ -12,28 +12,47 @@ import requests
 from io import BytesIO
 
 def upload_to_discord(file, filename):
-    """Upload ảnh lên Discord storage → trả về CDN URL."""
     webhook = st.secrets["discord"]["webhook"]
+    bot_token = st.secrets["discord"]["bot_token"]  # bạn cần thêm token bot discord
 
     files = {
         "file": (filename, file.read())
     }
 
+    # Gửi webhook upload ảnh
     response = requests.post(webhook, files=files)
+    if response.status_code not in (200, 204):
+        st.error(f"❌ Upload Discord thất bại, code: {response.status_code}")
+        return None
 
-    if response.status_code == 204:
-        # Discord không trả JSON, nhưng file được upload;
-        # Link CDN nằm trong công thức cố định:
-        channel_id = webhook.split("/")[-2]
-        attachment_id = "0"  # không biết ID → phải extract từ tin nhắn
-        return None  # Discord webhook không trả link trực tiếp
-    else:
-        try:
-            data = response.json()
-            return data["attachments"][0]["url"]
-        except:
-            st.error("❌ Upload Discord thất bại")
-            return None
+    # Lấy channel_id từ webhook URL
+    channel_id = webhook.split("/")[-2]
+
+    # Đợi 1-2 giây để Discord cập nhật message
+    time.sleep(2)
+
+    # Gọi API Discord lấy message cuối cùng của channel
+    url = f"https://discord.com/api/v10/channels/{channel_id}/messages?limit=1"
+    headers = {
+        "Authorization": f"Bot {bot_token}"
+    }
+    resp = requests.get(url, headers=headers)
+    if resp.status_code != 200:
+        st.error("❌ Lấy message Discord thất bại")
+        return None
+
+    messages = resp.json()
+    if not messages:
+        st.error("❌ Không có message trong channel Discord")
+        return None
+
+    attachments = messages[0].get("attachments", [])
+    if not attachments:
+        st.error("❌ Message Discord không có ảnh đính kèm")
+        return None
+
+    # Lấy URL ảnh CDN
+    return attachments[0]["url"]
 
 # DANH SÁCH TÀI KHOẢN NHÂN VIÊN
 # ============================
@@ -1478,6 +1497,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
