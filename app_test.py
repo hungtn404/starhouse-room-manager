@@ -10,20 +10,20 @@ import base64
 from google.cloud import storage
 
 def upload_to_gcs(bucket_name, file_data, file_name):
-    """Upload file lên Google Cloud Storage và trả về public URL."""
-    client = storage.Client.from_service_account_info(
-        st.secrets["gcp_service_account"]
-    )
+    client = storage.Client.from_service_account_info(st.secrets["gcp_service_account"])
     bucket = client.bucket(bucket_name)
     blob = bucket.blob(file_name)
 
-    # Upload file
     blob.upload_from_file(file_data, content_type=file_data.type)
 
-    # Cho phép public
-    blob.make_public()
+    # Tạo URL truy cập công khai có hạn (signed URL)
+    url = blob.generate_signed_url(
+        version="v4",
+        expiration=timedelta(days=7),   # URL tồn tại 7 ngày (tuỳ chỉnh)
+        method="GET"
+    )
 
-    return blob.public_url
+    return url
 
 # DANH SÁCH TÀI KHOẢN NHÂN VIÊN
 # ============================
@@ -1481,6 +1481,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
