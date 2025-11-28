@@ -6,7 +6,7 @@ import json
 import gspread
 import streamlit as st
 import pandas as pd
-import base64
+import base64, requests
 from google.cloud import storage
 
 def upload_to_gcs(bucket_name, file_data, file_name):
@@ -1567,6 +1567,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
