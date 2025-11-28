@@ -5,3 +5,5 @@ google-auth
 gspread-dataframe
 openpyxl
 google-cloud-storage
+requests
+
