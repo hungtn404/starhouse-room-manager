@@ -1402,31 +1402,122 @@ elif menu == 'CTV':
             st.write(f"**Hoa hồng:** {row.get('Hoa hồng','')}") # 👉 HIỂN THỊ HOA HỒNG RIÊNG
             st.write(f"**Ghi chú:** {row.get('Ghi chú','')}")
 
-            # ==== HIỂN THỊ HÌNH ẢNH ====
             image_urls = row.get("Hình ảnh", [])
-            
+
             if image_urls and isinstance(image_urls, list) and len(image_urls) > 0:
-                st.markdown("##### 📸 Hình ảnh phòng")
             
+                st.markdown("##### 📸 Hình ảnh phòng (Google Cloud Storage)")
+            
+                # Tạo id riêng cho từng phòng để không trùng modal
+                modal_key = f"modal_{ma_phong}"
+            
+                # Inject CSS chỉ 1 lần
+                st.markdown("""
+                <style>
+                    .gallery-img {
+                        width: 100%;
+                        height: 160px;
+                        object-fit: cover;
+                        border-radius: 12px;
+                        cursor: pointer;
+                        transition: transform .2s;
+                        box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+                    }
+                    .gallery-img:hover { transform: scale(1.03); }
+            
+                    /* MODAL OVERLAY */
+                    .modal-overlay {
+                        position: fixed;
+                        top: 0; left: 0; 
+                        width: 100%; height: 100%;
+                        background: rgba(0,0,0,0.75);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 9999;
+                    }
+                    .modal-content {
+                        max-width: 90%;
+                        max-height: 90%;
+                        border-radius: 12px;
+                        box-shadow: 0 0 20px rgba(255,255,255,0.4);
+                    }
+                    .modal-arrow {
+                        position: fixed;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        color: white;
+                        font-size: 50px;
+                        cursor: pointer;
+                        user-select: none;
+                        z-index: 10000;
+                    }
+                    .modal-prev { left: 40px; }
+                    .modal-next { right: 40px; }
+                </style>
+                """, unsafe_allow_html=True)
+            
+                # Khởi tạo modal state
+                if modal_key not in st.session_state:
+                    st.session_state[modal_key] = None
+            
+                # ==== HIỂN THỊ 3 ẢNH / HÀNG ====
                 cols = st.columns(3)
             
-                # hiển thị gallery 3 ảnh 1 hàng
                 for i, url in enumerate(image_urls):
                     with cols[i % 3]:
-                        if st.button(f"Xem ảnh {i+1}", key=f"btn_{ma_phong}_{i}"):
-                            st.session_state["show_img"] = url
+                        img_data = requests.get(url).content
+                        img_base64 = base64.b64encode(img_data).decode()
             
-                        st.image(url, use_column_width=True)
-                
+                        # Ảnh thumbnail
+                        st.markdown(
+                            f""
+                            <img src="data:image/jpeg;base64,{img_base64}"
+                                 class="gallery-img"
+                                 onclick="document.getElementById('{modal_key}').style.display='flex';
+                                          document.getElementById('{modal_key}_img').src=this.src;
+                                          window.currentIndex_{modal_key}={i};
+                                 ">
+                            "",
+                            unsafe_allow_html=True
+                        )
             
-                # ==== POPUP / PHÓNG TO ẢNH ====
-                if st.session_state.get("show_img"):
-                    st.markdown("### 🔍 Ảnh phóng to")
-                    st.image(st.session_state["show_img"], use_column_width=True)
+                # ==== TẠO MODAL (ẩn/hiện qua JS) ====
+                st.markdown(
+                    f"""
+                    <div id="{modal_key}"; class="modal-overlay"; style="display:none;"
+                         onclick="this.style.display='none'">
             
-                    if st.button("Đóng ảnh"):
-                        st.session_state["show_img"] = None
-
+                        <span class="modal-arrow modal-prev"
+                              onclick="event.stopPropagation(); movePrev_{modal_key}();">&#10094;</span>
+            
+                        <img id="{modal_key}_img"; class="modal-content"; onclick="event.stopPropagation();">
+            
+                        <span class="modal-arrow modal-next";
+                              onclick="event.stopPropagation(); moveNext_{modal_key}();">&#10095;</span>
+            
+                    </div>
+            
+                    <script>
+                    window.currentIndex_{modal_key} = 0;
+                    const imgList_{modal_key} = {image_urls};
+            
+                    function movePrev_{modal_key}() {{
+                        window.currentIndex_{modal_key} =
+                            (window.currentIndex_{modal_key} - 1 + imgList_{modal_key}.length)
+                            % imgList_{modal_key}.length;
+                        document.getElementById("{modal_key}_img").src = imgList_{modal_key}[window.currentIndex_{modal_key}];
+                    }}
+            
+                    function moveNext_{modal_key}() {{
+                        window.currentIndex_{modal_key} =
+                            (window.currentIndex_{modal_key} + 1) % imgList_{modal_key}.length;
+                        document.getElementById("{modal_key}_img").src = imgList_{modal_key}[window.currentIndex_{modal_key}];
+                    }}
+                    </script>
+                    "",
+                    unsafe_allow_html=True
+                )
             
             st.markdown("---")
 
@@ -1443,6 +1534,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
