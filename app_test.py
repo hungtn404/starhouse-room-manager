@@ -1408,10 +1408,9 @@ elif menu == 'CTV':
             
                 st.markdown("##### 📸 Hình ảnh phòng (Google Cloud Storage)")
             
-                # Tạo id riêng cho từng phòng để không trùng modal
                 modal_key = f"modal_{ma_phong}"
             
-                # Inject CSS chỉ 1 lần
+                # CSS (injected once)
                 st.markdown("""
                 <style>
                     .gallery-img {
@@ -1425,7 +1424,6 @@ elif menu == 'CTV':
                     }
                     .gallery-img:hover { transform: scale(1.03); }
             
-                    /* MODAL OVERLAY */
                     .modal-overlay {
                         position: fixed;
                         top: 0; left: 0; 
@@ -1457,67 +1455,77 @@ elif menu == 'CTV':
                 </style>
                 """, unsafe_allow_html=True)
             
-                # Khởi tạo modal state
+                # ensure state key
                 if modal_key not in st.session_state:
                     st.session_state[modal_key] = None
             
-                # ==== HIỂN THỊ 3 ẢNH / HÀNG ====
                 cols = st.columns(3)
             
+                # --- RECOMMENDED: use direct URL in src (faster) ---
                 for i, url in enumerate(image_urls):
                     with cols[i % 3]:
-                        img_data = requests.get(url).content
-                        img_base64 = base64.b64encode(img_data).decode()
-            
-                        # Ảnh thumbnail
+                
+                        safe_url = url.replace('"', '%22')
+                
                         st.markdown(
-                            f""
-                            <img src="data:image/jpeg;base64,{img_base64}"
+                            f"""
+                            <img src="{safe_url}"
                                  class="gallery-img"
-                                 onclick="document.getElementById('{modal_key}').style.display='flex';
-                                          document.getElementById('{modal_key}_img').src=this.src;
-                                          window.currentIndex_{modal_key}={i};
+                                 onclick="
+                                    document.getElementById('{modal_key}').style.display='flex';
+                                    document.getElementById('{modal_key}_img').src='{safe_url}';
+                                    window.currentIndex_{modal_key} = {i};
                                  ">
-                            "",
+                            """,
                             unsafe_allow_html=True
                         )
             
-                # ==== TẠO MODAL (ẩn/hiện qua JS) ====
+                # Convert Python list to a JSON array so JS sees valid strings (double quotes)
+                image_urls_json = json.dumps(image_urls)
+            
+                # ==== Modal HTML + JS ====
+                # Note: in this f-string we must double braces for literal { } in the JS function bodies.
                 st.markdown(
                     f"""
-                    <div id="{modal_key}"; class="modal-overlay"; style="display:none;"
+                    <div id="{modal_key}" class="modal-overlay" style="display:none;"
                          onclick="this.style.display='none'">
-            
+                
                         <span class="modal-arrow modal-prev"
                               onclick="event.stopPropagation(); movePrev_{modal_key}();">&#10094;</span>
-            
-                        <img id="{modal_key}_img"; class="modal-content"; onclick="event.stopPropagation();">
-            
-                        <span class="modal-arrow modal-next";
+                
+                        <img id="{modal_key}_img" class="modal-content"
+                             onclick="event.stopPropagation();">
+                
+                        <span class="modal-arrow modal-next"
                               onclick="event.stopPropagation(); moveNext_{modal_key}();">&#10095;</span>
-            
                     </div>
-            
+                
                     <script>
                     window.currentIndex_{modal_key} = 0;
-                    const imgList_{modal_key} = {image_urls};
-            
+                    const imgList_{modal_key} = {image_urls_json};
+                
                     function movePrev_{modal_key}() {{
                         window.currentIndex_{modal_key} =
                             (window.currentIndex_{modal_key} - 1 + imgList_{modal_key}.length)
                             % imgList_{modal_key}.length;
-                        document.getElementById("{modal_key}_img").src = imgList_{modal_key}[window.currentIndex_{modal_key}];
+                
+                        document.getElementById("{modal_key}_img").src =
+                            imgList_{modal_key}[window.currentIndex_{modal_key}];
                     }}
-            
+                
                     function moveNext_{modal_key}() {{
                         window.currentIndex_{modal_key} =
-                            (window.currentIndex_{modal_key} + 1) % imgList_{modal_key}.length;
-                        document.getElementById("{modal_key}_img").src = imgList_{modal_key}[window.currentIndex_{modal_key}];
+                            (window.currentIndex_{modal_key} + 1)
+                            % imgList_{modal_key}.length;
+                
+                        document.getElementById("{modal_key}_img").src =
+                            imgList_{modal_key}[window.currentIndex_{modal_key}];
                     }}
                     </script>
-                    "",
+                    """,
                     unsafe_allow_html=True
                 )
+
             
             st.markdown("---")
 
@@ -1534,6 +1542,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
