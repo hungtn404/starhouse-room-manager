@@ -1422,29 +1422,28 @@ elif menu == 'CTV':
             st.write(f"**Hoa hồng:** {row.get('Hoa hồng','')}") # 👉 HIỂN THỊ HOA HỒNG RIÊNG
             st.write(f"**Ghi chú:** {row.get('Ghi chú','')}")
             
-            # 👉 HIỂN THỊ ẢNH DISCORD
+            # 👉 HIỂN THỊ ẢNH TỪ GOOGLE CLOUD STORAGE
             image_urls = row.get('Hình ảnh')
             
             if image_urls and isinstance(image_urls, list) and len(image_urls) > 0:
-                st.markdown("##### 📸 Hình ảnh phòng (Discord CDN)")
-            
+                st.markdown("##### 📸 Hình ảnh phòng (Google Cloud Storage)")
+                
                 # Chọn tất cả
                 select_all = st.checkbox("✅ Chọn tất cả ảnh", key=f"{ma_phong}_select_all")
-            
+                
                 cols = st.columns(min(len(image_urls), 3))
                 selected_files = []
-            
+                
                 for i, url in enumerate(image_urls):
-            
                     with cols[i % 3]:
-                        # HIỂN THỊ ẢNH TRỰC TIẾP TỪ DISCORD
+                        # HIỂN THỊ ẢNH TRỰC TIẾP TỪ GOOGLE STORAGE
                         st.image(url, caption=f"Ảnh {i+1}")
             
                         selected = select_all or st.checkbox("Chọn ảnh", key=f"{ma_phong}_{i}")
                         if selected:
                             selected_files.append(url)
             
-                # NÚT TẢI VỀ → ZIP
+                # NÚT TẢI ZIP
                 if selected_files:
                     import requests
                     from io import BytesIO
@@ -1480,6 +1479,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
