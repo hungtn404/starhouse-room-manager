@@ -16,10 +16,9 @@ def upload_to_gcs(bucket_name, file_data, file_name):
     bucket = client.bucket(bucket_name)
     blob = bucket.blob(file_name)
 
-    # Upload file
     blob.upload_from_file(file_data, content_type=file_data.type)
 
-    # Công khai file (vĩnh viễn)
+    # Công khai file
     blob.make_public()
 
     return blob.public_url
@@ -1480,6 +1479,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
