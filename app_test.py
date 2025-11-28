@@ -616,10 +616,6 @@ if menu == "Admin":
                     type=["jpg", "png", "jpeg"], 
                     accept_multiple_files=True
                 )
-                
-
-                submitted = st.form_submit_button("Lưu phòng", on_click=reset_add_form)
-            if submitted:
                 image_urls = []
                 
                 if uploaded_files:
@@ -632,6 +628,10 @@ if menu == "Admin":
                         else:
                             st.error(f"Không upload được ảnh: {f.name}")
                 st.write("Ảnh đã upload:", image_urls)
+
+                submitted = st.form_submit_button("Lưu phòng", on_click=reset_add_form)
+            if submitted:
+                
                 
                 # 1. Kiểm tra dữ liệu chung
                 # Lấy giá trị từ Session State (Các widget trong form tự động cập nhật Session State)
