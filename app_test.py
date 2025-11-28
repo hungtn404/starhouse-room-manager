@@ -1401,168 +1401,32 @@ elif menu == 'CTV':
             st.write(f"**Điện/Nước:** {row.get('Điện','')} / {row.get('Nước','')}    |    **Dịch vụ/Xe/Giặt:** {row.get('Dịch vụ','')} / {row.get('Xe','')} / {row.get('Giặt','')}")
             st.write(f"**Hoa hồng:** {row.get('Hoa hồng','')}") # 👉 HIỂN THỊ HOA HỒNG RIÊNG
             st.write(f"**Ghi chú:** {row.get('Ghi chú','')}")
+
+            # ==== HIỂN THỊ HÌNH ẢNH ====
+            image_urls = row.get("Hình ảnh", [])
             
-            # ==== CSS Lightbox ====
-            st.markdown("""
-            <style>
-                .img-thumb {
-                    border-radius: 10px;
-                    transition: transform 0.2s ease-in-out;
-                    cursor: pointer;
-                    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-                    width: 100%;
-                    height: 150px;
-                    object-fit: cover;
-                    margin-bottom: 5px;
-                }
-                .img-caption {
-                    text-align: center;
-                    font-size: 13px;
-                    opacity: 0.8;
-                    margin-bottom: 15px;
-                }
-            
-                /* MODAL */
-                .modal-bg {
-                    position: fixed;
-                    top: 0; left: 0;
-                    width: 100%; height: 100%;
-                    background: rgba(0,0,0,0.7);
-                    backdrop-filter: blur(3px);
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    z-index: 9999;
-                }
-                .modal-img {
-                    max-width: 90%;
-                    max-height: 90%;
-                    border-radius: 12px;
-                    box-shadow: 0 0 20px rgba(255,255,255,0.3);
-                }
-                .modal-nav {
-                    color: white;
-                    font-size: 40px;
-                    position: fixed;
-                    top: 50%;
-                    transform: translateY(-50%);
-                    cursor: pointer;
-                    padding: 10px;
-                    z-index: 10000;
-                    user-select: none;
-                }
-                .modal-prev { left: 20px; }
-                .modal-next { right: 20px; }
-            </style>
-            """, unsafe_allow_html=True)
-            
-            
-            # Lấy danh sách ảnh
-            image_urls = row.get("Hình ảnh")
-            
-            # Tạo state nếu chưa có
-            if "modal_index" not in st.session_state:
-                st.session_state.modal_index = None
-            
-            # ==== GRID HIỂN THỊ THUMBNAIL ====
             if image_urls and isinstance(image_urls, list) and len(image_urls) > 0:
-            
-                st.markdown("##### 📸 Hình ảnh phòng (Google Cloud Storage)")
+                st.markdown("##### 📸 Hình ảnh phòng")
             
                 cols = st.columns(3)
             
+                # hiển thị gallery 3 ảnh 1 hàng
                 for i, url in enumerate(image_urls):
                     with cols[i % 3]:
-                        if st.button(f"📷 Ảnh {i+1}", key=f"open_{ma_phong}_{i}"):
-                            st.session_state.modal_index = i
+                        if st.button(f"Xem ảnh {i+1}", key=f"btn_{ma_phong}_{i}"):
+                            st.session_state["show_img"] = url
             
-                        st.markdown("""
-                            <img src="{url}" class="img-thumb" onclick="window.parent.postMessage({{'index': {i}}}, '*')">
-                            <div class='img-caption'>Ảnh {i+1}</div>
-                            """,
-                            unsafe_allow_html=True
-                        )
+                        st.image(url, use_column_width=True)
+                
             
+                # ==== POPUP / PHÓNG TO ẢNH ====
+                if st.session_state.get("show_img"):
+                    st.markdown("### 🔍 Ảnh phóng to")
+                    st.image(st.session_state["show_img"], use_column_width=True)
             
-            # ==== XỬ LÝ JS CLICK → mở modal ====
-            st.markdown("""
-            <script>
-            window.addEventListener("message", (event) => {
-                if (event.data.index !== undefined) {
-                    const index = event.data.index;
-                    window.parent.postMessage(
-                        {type: "streamlit:rerun", "state": {"modal_index": index}}, 
-                        "*"
-                    );
-                }
-            });
-            </script>
-            """, unsafe_allow_html=True)
-            
-            
-            # ==== MODAL VIEW — HIỂN THỊ ẢNH LỚN ====
-            if st.session_state.modal_index is not None:
-            
-                # FIX AN TOÀN TRÁNH IndexError
-                if (
-                    not isinstance(st.session_state.modal_index, int)
-                    or st.session_state.modal_index < 0
-                    or st.session_state.modal_index >= len(image_urls)
-                ):
-                    st.session_state.modal_index = None
-                    st.experimental_rerun()
-            
-                cur = st.session_state.modal_index
-                if cur is None:
-                    st.stop()
-            
-                img_url = image_urls[cur]
-            
-                # Load ảnh base64 để nhúng vào modal
-                img_data = requests.get(img_url).content
-                img_base64 = base64.b64encode(img_data).decode()
-            
-                st.markdown(
-                    f"""
-                    <div class="modal-bg" onclick="window.parent.postMessage({{'type':'close-modal'}}, '*')">
-                        <img class="modal-img" src="data:image/jpeg;base64,{img_base64}">
-                        <div class="modal-nav modal-prev"
-                             onclick="event.stopPropagation(); window.parent.postMessage({{'type':'prev-img'}}, '*')">&#10094;</div>
-                        <div class="modal-nav modal-next"
-                             onclick="event.stopPropagation(); window.parent.postMessage({{'type':'next-img'}}, '*')">&#10095;</div>
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
+                    if st.button("Đóng ảnh"):
+                        st.session_state["show_img"] = None
 
-            
-            
-            # ==== JS XỬ LÝ ĐIỀU HƯỚNG VÀ ĐÓNG ====
-            st.markdown("""
-            <script>
-            window.addEventListener("message", (event) => {
-                if (event.data.close) {
-                    window.parent.postMessage({type: "streamlit:rerun", "state": {"modal_index": null}}, "*");
-                }
-                if (event.data.nav === "prev") {
-                    window.parent.postMessage({type: "streamlit:rerun", "state": {"modal_index": "prev"}}, "*");
-                }
-                if (event.data.nav === "next") {
-                    window.parent.postMessage({type: "streamlit:rerun", "state": {"modal_index": "next"}}, "*");
-                }
-            });
-            </script>
-            """, unsafe_allow_html=True)
-            
-            
-            # ==== XỬ LÝ NEXT / PREV ====
-            if st.session_state.modal_index == "prev":
-                st.session_state.modal_index = (cur - 1) % len(image_urls)
-                st.rerun()
-            
-            elif st.session_state.modal_index == "next":
-                st.session_state.modal_index = (cur + 1) % len(image_urls)
-                st.rerun()
             
             st.markdown("---")
 
@@ -1579,6 +1443,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
