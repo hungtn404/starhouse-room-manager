@@ -1500,38 +1500,41 @@ elif menu == 'CTV':
             """, unsafe_allow_html=True)
             
             
-            # ==== HIỂN THỊ MODAL ====
+            # ==== MODAL VIEW — HIỂN THỊ ẢNH LỚN ====
             if st.session_state.modal_index is not None:
-        
-            # FIX AN TOÀN: tránh IndexError
-            if (not isinstance(st.session_state.modal_index, int)) or \
-               (st.session_state.modal_index < 0) or \
-               (st.session_state.modal_index >= len(image_urls)):
-        
-                st.session_state.modal_index = None
-                st.experimental_rerun()
-        
-            cur = st.session_state.modal_index
-            if cur is None:
-                st.stop()
-        
-            img_url = image_urls[cur]
-        
-            img_data = requests.get(img_url).content
-            img_base64 = base64.b64encode(img_data).decode()
-        
-            st.markdown(
-                f"""
-                <div class="modal-bg" onclick="window.parent.postMessage({{'type':'close-modal'}}, '*')">
-                    <img class="modal-img" src="data:image/jpeg;base64,{img_base64}">
-                    <div class="modal-nav modal-prev"
-                         onclick="event.stopPropagation(); window.parent.postMessage({{'type':'prev-img'}}, '*')">&#10094;</div>
-                    <div class="modal-nav modal-next"
-                         onclick="event.stopPropagation(); window.parent.postMessage({{'type':'next-img'}}, '*')">&#10095;</div>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+            
+                # FIX AN TOÀN TRÁNH IndexError
+                if (
+                    not isinstance(st.session_state.modal_index, int)
+                    or st.session_state.modal_index < 0
+                    or st.session_state.modal_index >= len(image_urls)
+                ):
+                    st.session_state.modal_index = None
+                    st.experimental_rerun()
+            
+                cur = st.session_state.modal_index
+                if cur is None:
+                    st.stop()
+            
+                img_url = image_urls[cur]
+            
+                # Load ảnh base64 để nhúng vào modal
+                img_data = requests.get(img_url).content
+                img_base64 = base64.b64encode(img_data).decode()
+            
+                st.markdown(
+                    f"""
+                    <div class="modal-bg" onclick="window.parent.postMessage({{'type':'close-modal'}}, '*')">
+                        <img class="modal-img" src="data:image/jpeg;base64,{img_base64}">
+                        <div class="modal-nav modal-prev"
+                             onclick="event.stopPropagation(); window.parent.postMessage({{'type':'prev-img'}}, '*')">&#10094;</div>
+                        <div class="modal-nav modal-next"
+                             onclick="event.stopPropagation(); window.parent.postMessage({{'type':'next-img'}}, '*')">&#10095;</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
             
             
             # ==== JS XỬ LÝ ĐIỀU HƯỚNG VÀ ĐÓNG ====
@@ -1576,6 +1579,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
