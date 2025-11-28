@@ -765,7 +765,7 @@ if menu == "Admin":
                             urls = []
                 
                             # Tên bucket từ secrets
-                            GCS_BUCKET_NAME = st.secrets["bucket_name"]
+                            GCS_BUCKET_NAME = st.secrets["gcp_service_account"]["bucket_name"]
                 
                             # Upload từng file lên GCS
                             for file in uploaded_files:
@@ -1480,6 +1480,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
