@@ -608,7 +608,7 @@ if menu == "Admin":
                 hoa_hong = st.text_input("Hoa hồng", key="hoa_hong_key") 
                 
                 # --- GCS info ---
-                GCS_BUCKET_NAME = st.secrets["gcp_service_account"]["database-starhouse-room-manager"]
+                GCS_BUCKET_NAME = st.secrets["gcp_service_account"]
                 
                 # Upload hình ảnh
                 uploaded_files = st.file_uploader(
@@ -1472,6 +1472,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
