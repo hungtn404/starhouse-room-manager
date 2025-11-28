@@ -617,6 +617,9 @@ if menu == "Admin":
                     accept_multiple_files=True
                 )
                 
+
+                submitted = st.form_submit_button("Lưu phòng", on_click=reset_add_form)
+            if submitted:
                 image_urls = []
                 
                 if uploaded_files:
@@ -629,9 +632,7 @@ if menu == "Admin":
                         else:
                             st.error(f"Không upload được ảnh: {f.name}")
                 st.write("Ảnh đã upload:", image_urls)
-
-                submitted = st.form_submit_button("Lưu phòng", on_click=reset_add_form)
-            if submitted:
+                
                 # 1. Kiểm tra dữ liệu chung
                 # Lấy giá trị từ Session State (Các widget trong form tự động cập nhật Session State)
                 so_nha_val = st.session_state.get("so_nha_key") 
@@ -1471,6 +1472,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
