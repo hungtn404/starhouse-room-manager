@@ -1128,42 +1128,42 @@ elif menu == "Nhân viên":
             st.write(f"**Hoa hồng:** {row.get('Hoa hồng','')}") # 👉 HIỂN THỊ HOA HỒNG RIÊNG
             st.write(f"**Ghi chú:** {row.get('Ghi chú','')}")
             
-            # 👉 BƯỚC CẬP NHẬT: HIỂN THỊ HÌNH ẢNH (Từ câu trả lời trước)
-            # Hiển thị hình ảnh + chọn download
+            # 👉 HIỂN THỊ ẢNH DISCORD
             image_urls = row.get('Hình ảnh')
+            
             if image_urls and isinstance(image_urls, list) and len(image_urls) > 0:
-                st.markdown("##### 📸 Hình ảnh phòng")
-    
-                # --- NÚT CHỌN TẤT CẢ ---
+                st.markdown("##### 📸 Hình ảnh phòng (Discord CDN)")
+            
+                # Chọn tất cả
                 select_all = st.checkbox("✅ Chọn tất cả ảnh", key=f"{ma_phong}_select_all")
-    
-                # Hiển thị tối đa 3 ảnh trên 1 dòng
-                cols = st.columns(min(len(image_urls), 3)) 
-                selected_files = []  # Danh sách ảnh được chọn download
-    
+            
+                cols = st.columns(min(len(image_urls), 3))
+                selected_files = []
+            
                 for i, url in enumerate(image_urls):
-                    if os.path.exists(url):
-                        with cols[i % 3]:
-                            # Hiển thị ảnh
-                            st.image(url, caption=os.path.basename(url))
-                
-                            # Checkbox chọn ảnh riêng lẻ
-                            selected = select_all or st.checkbox("Chọn ảnh", key=f"{ma_phong}_{i}")
-                            if selected:
-                                selected_files.append(url)
-                    else:
-                        cols[i % 3].warning(f"File ảnh không tồn tại: {os.path.basename(url)}")
-    
-                # Nút download nếu có ảnh được chọn
+            
+                    with cols[i % 3]:
+                        # HIỂN THỊ ẢNH TRỰC TIẾP TỪ DISCORD
+                        st.image(url, caption=f"Ảnh {i+1}")
+            
+                        selected = select_all or st.checkbox("Chọn ảnh", key=f"{ma_phong}_{i}")
+                        if selected:
+                            selected_files.append(url)
+            
+                # NÚT TẢI VỀ → ZIP
                 if selected_files:
+                    import requests
                     from io import BytesIO
                     from zipfile import ZipFile
+            
                     zip_buffer = BytesIO()
                     with ZipFile(zip_buffer, "w") as zip_file:
-                        for fpath in selected_files:
-                            zip_file.write(fpath, arcname=os.path.basename(fpath))
+                        for idx, url in enumerate(selected_files):
+                            img_data = requests.get(url).content
+                            zip_file.writestr(f"image_{idx+1}.jpg", img_data)
+            
                     zip_buffer.seek(0)
-
+            
                     st.download_button(
                         label="💾 Tải về ảnh đã chọn",
                         data=zip_buffer,
@@ -1309,42 +1309,42 @@ elif menu == 'CTV':
             st.write(f"**Hoa hồng:** {row.get('Hoa hồng','')}") # 👉 HIỂN THỊ HOA HỒNG RIÊNG
             st.write(f"**Ghi chú:** {row.get('Ghi chú','')}")
             
-            # 👉 BƯỚC CẬP NHẬT: HIỂN THỊ HÌNH ẢNH (Từ câu trả lời trước)
-            # Hiển thị hình ảnh + chọn download
+            # 👉 HIỂN THỊ ẢNH DISCORD
             image_urls = row.get('Hình ảnh')
+            
             if image_urls and isinstance(image_urls, list) and len(image_urls) > 0:
-                st.markdown("##### 📸 Hình ảnh phòng")
-    
-                # --- NÚT CHỌN TẤT CẢ ---
+                st.markdown("##### 📸 Hình ảnh phòng (Discord CDN)")
+            
+                # Chọn tất cả
                 select_all = st.checkbox("✅ Chọn tất cả ảnh", key=f"{ma_phong}_select_all")
-    
-                # Hiển thị tối đa 3 ảnh trên 1 dòng
-                cols = st.columns(min(len(image_urls), 3)) 
-                selected_files = []  # Danh sách ảnh được chọn download
-    
+            
+                cols = st.columns(min(len(image_urls), 3))
+                selected_files = []
+            
                 for i, url in enumerate(image_urls):
-                    if os.path.exists(url):
-                        with cols[i % 3]:
-                            # Hiển thị ảnh
-                            st.image(url, caption=os.path.basename(url), width='stretch')
-                
-                            # Checkbox chọn ảnh riêng lẻ
-                            selected = select_all or st.checkbox("Chọn ảnh", key=f"{ma_phong}_{i}")
-                            if selected:
-                                selected_files.append(url)
-                    else:
-                        cols[i % 3].warning(f"File ảnh không tồn tại: {os.path.basename(url)}")
-    
-                # Nút download nếu có ảnh được chọn
+            
+                    with cols[i % 3]:
+                        # HIỂN THỊ ẢNH TRỰC TIẾP TỪ DISCORD
+                        st.image(url, caption=f"Ảnh {i+1}")
+            
+                        selected = select_all or st.checkbox("Chọn ảnh", key=f"{ma_phong}_{i}")
+                        if selected:
+                            selected_files.append(url)
+            
+                # NÚT TẢI VỀ → ZIP
                 if selected_files:
+                    import requests
                     from io import BytesIO
                     from zipfile import ZipFile
+            
                     zip_buffer = BytesIO()
                     with ZipFile(zip_buffer, "w") as zip_file:
-                        for fpath in selected_files:
-                            zip_file.write(fpath, arcname=os.path.basename(fpath))
+                        for idx, url in enumerate(selected_files):
+                            img_data = requests.get(url).content
+                            zip_file.writestr(f"image_{idx+1}.jpg", img_data)
+            
                     zip_buffer.seek(0)
-
+            
                     st.download_button(
                         label="💾 Tải về ảnh đã chọn",
                         data=zip_buffer,
@@ -1367,6 +1367,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
