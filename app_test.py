@@ -10,13 +10,19 @@ import base64
 from google.cloud import storage
 
 def upload_to_gcs(bucket_name, file_data, file_name):
+    """Upload file lên Google Cloud Storage và trả về public URL."""
     client = storage.Client.from_service_account_info(
         st.secrets["gcp_service_account"]
     )
     bucket = client.bucket(bucket_name)
     blob = bucket.blob(file_name)
+
+    # Upload file
     blob.upload_from_file(file_data, content_type=file_data.type)
+
+    # Cho phép public
     blob.make_public()
+
     return blob.public_url
 
 # DANH SÁCH TÀI KHOẢN NHÂN VIÊN
@@ -608,7 +614,7 @@ if menu == "Admin":
                 hoa_hong = st.text_input("Hoa hồng", key="hoa_hong_key") 
                 
                 # --- GCS info ---
-                GCS_BUCKET_NAME = st.secrets["gcp_service_account"]
+                GCS_BUCKET_NAME = st.secrets["gcs_bucket_name"]
                 
                 # Upload hình ảnh
                 uploaded_files = st.file_uploader(
@@ -616,17 +622,20 @@ if menu == "Admin":
                     type=["jpg", "png", "jpeg"], 
                     accept_multiple_files=True
                 )
+                
                 image_urls = []
                 
                 if uploaded_files:
                     for f in uploaded_files:
                         import uuid
                         unique_file_name = f"{uuid.uuid4()}_{f.name}"
-                        img_url = upload_to_gcs(GCS_BUCKET_NAME, f, unique_file_name)
-                        if img_url:
+                
+                        try:
+                            img_url = upload_to_gcs(GCS_BUCKET_NAME, f, unique_file_name)
                             image_urls.append(img_url)
-                        else:
-                            st.error(f"Không upload được ảnh: {f.name}")
+                        except Exception as e:
+                            st.error(f"Không upload được ảnh {f.name}: {e}")
+                
                 st.write("Ảnh đã upload:", image_urls)
 
                 submitted = st.form_submit_button("Lưu phòng", on_click=reset_add_form)
@@ -1472,6 +1481,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
