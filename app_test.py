@@ -7,7 +7,9 @@ import gspread
 import streamlit as st
 import pandas as pd
 import base64
+from PIL import Image
 import requests
+from io import BytesIO
 
 def upload_to_discord(file, filename):
     """Upload ảnh lên Discord storage → trả về CDN URL."""
@@ -1129,47 +1131,153 @@ elif menu == "Nhân viên":
             st.write(f"**Ghi chú:** {row.get('Ghi chú','')}")
             
             # 👉 HIỂN THỊ ẢNH DISCORD
+            # CSS đẹp
+            st.markdown("""
+                <style>
+                    .img-thumb {
+                        border-radius: 10px;
+                        transition: transform 0.2s ease-in-out;
+                        cursor: pointer;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+                    }
+                    .img-thumb:hover {
+                        transform: scale(1.03);
+                    }
+            
+                    /* MODAL */
+                    .modal-bg {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background: rgba(0,0,0,0.7);
+                        backdrop-filter: blur(3px);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 9999;
+                    }
+                    .modal-img {
+                        max-width: 90%;
+                        max-height: 90%;
+                        border-radius: 12px;
+                        box-shadow: 0 0 20px rgba(255,255,255,0.3);
+                    }
+                    .modal-nav {
+                        color: white;
+                        font-size: 40px;
+                        position: fixed;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        cursor: pointer;
+                        padding: 10px;
+                        z-index: 10000;
+                    }
+                    .modal-prev { left: 20px; }
+                    .modal-next { right: 20px; }
+                </style>
+            """, unsafe_allow_html=True)
+
             image_urls = row.get('Hình ảnh')
             
-            if image_urls and isinstance(image_urls, list) and len(image_urls) > 0:
-                st.markdown("##### 📸 Hình ảnh phòng (Discord CDN)")
+            # Modal state
+            if "modal_index" not in st.session_state:
+                st.session_state.modal_index = None
             
-                # Chọn tất cả
-                select_all = st.checkbox("✅ Chọn tất cả ảnh", key=f"{ma_phong}_select_all")
+            if image_urls:
+                st.markdown("##### 📸 Hình ảnh phòng (Gallery nâng cấp)")
             
-                cols = st.columns(min(len(image_urls), 3))
-                selected_files = []
+                cols = st.columns(3)
+                FIXED_HEIGHT = 220
             
                 for i, url in enumerate(image_urls):
-            
                     with cols[i % 3]:
-                        # HIỂN THỊ ẢNH TRỰC TIẾP TỪ DISCORD
-                        st.image(url, caption=f"Ảnh {i+1}")
             
-                        selected = select_all or st.checkbox("Chọn ảnh", key=f"{ma_phong}_{i}")
-                        if selected:
-                            selected_files.append(url)
+                        # Tải ảnh
+                        res = requests.get(url)
+                        img = Image.open(BytesIO(res.content))
             
-                # NÚT TẢI VỀ → ZIP
-                if selected_files:
-                    import requests
-                    from io import BytesIO
-                    from zipfile import ZipFile
+                        # Resize theo chiều cao đồng bộ
+                        w, h = img.size
+                        new_width = int(w * (FIXED_HEIGHT / h))
+                        img = img.resize((new_width, FIXED_HEIGHT))
             
-                    zip_buffer = BytesIO()
-                    with ZipFile(zip_buffer, "w") as zip_file:
-                        for idx, url in enumerate(selected_files):
-                            img_data = requests.get(url).content
-                            zip_file.writestr(f"image_{idx+1}.jpg", img_data)
+                        # Encode sang byte để nhúng HTML
+                        buf = BytesIO()
+                        img.save(buf, format="JPEG")
+                        img_bytes = buf.getvalue()
+                        img_base64 = base64.b64encode(img_bytes).decode()
             
-                    zip_buffer.seek(0)
+                        # Render thumb bằng HTML (tạo click event)
+                        st.markdown(
+                            f"""
+                            <img src="data:image/jpeg;base64,{img_base64}" 
+                                 class="img-thumb"
+                                 onclick="window.parent.postMessage({{'type': 'open-modal', 'index': {i}}}, '*')">
+                            <div style="text-align:center; font-size:13px; opacity:0.8">Ảnh {i+1}</div>
+                            """,
+                            unsafe_allow_html=True
+                        )
             
-                    st.download_button(
-                        label="💾 Tải về ảnh đã chọn",
-                        data=zip_buffer,
-                        file_name=f"phong_{ma_phong}_images.zip",
-                        mime="application/zip"
-                    )
+                # Listen event từ JS → mở modal
+                st.markdown("""
+                    <script>
+                        window.addEventListener("message", (event) => {
+                            if (event.data.type === "open-modal") {
+                                const index = event.data.index;
+                                window.parent.postMessage({type: 'streamlit:setComponentValue', value: index}, '*');
+                            }
+                        });
+                    </script>
+                """, unsafe_allow_html=True)
+
+            if st.session_state.modal_index is not None:
+
+            cur = st.session_state.modal_index
+        
+            # Tải ảnh gốc
+            img_data = requests.get(image_urls[cur]).content
+            img_base64 = base64.b64encode(img_data).decode()
+        
+            # Render modal HTML
+            st.markdown(
+                f"""
+                <div class="modal-bg" onclick="window.parent.postMessage({{'type':'close-modal'}}, '*')">
+                    <img class="modal-img" src="data:image/jpeg;base64,{img_base64}">
+                    <div class="modal-nav modal-prev"
+                         onclick="event.stopPropagation(); window.parent.postMessage({{'type':'prev-img'}}, '*')">&#10094;</div>
+                    <div class="modal-nav modal-next"
+                         onclick="event.stopPropagation(); window.parent.postMessage({{'type':'next-img'}}, '*')">&#10095;</div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+        
+            # JS nhận nav sự kiện
+            st.markdown("""
+                <script>
+                window.addEventListener("message", (event) => {
+                    if (event.data.type === "close-modal") {
+                        window.parent.postMessage({type:'streamlit:setComponentValue', value: null}, '*');
+                    }
+                    if (event.data.type === "prev-img") {
+                        window.parent.postMessage({type:'streamlit:setComponentValue', value: "prev"}, '*');
+                    }
+                    if (event.data.type === "next-img") {
+                        window.parent.postMessage({type:'streamlit:setComponentValue', value: "next"}, '*');
+                    }
+                });
+                </script>
+            """, unsafe_allow_html=True)
+        
+            # Xử lý điều hướng
+            if st.session_state.modal_index == "prev":
+                st.session_state.modal_index = (cur - 1) % len(image_urls)
+                st.rerun()
+            elif st.session_state.modal_index == "next":
+                st.session_state.modal_index = (cur + 1) % len(image_urls)
+                st.rerun()
 
 elif menu == 'CTV':
     st.subheader("Nhân viên — Lọc & Xem")
@@ -1367,6 +1475,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
