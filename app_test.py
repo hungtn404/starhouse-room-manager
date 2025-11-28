@@ -630,10 +630,7 @@ if menu == "Admin":
                 image_urls = []
 
                 if uploaded_files:
-                    folder = "images"
-                    os.makedirs(folder, exist_ok=True)
                     for f in uploaded_files:
-                        # Dùng datetime để đảm bảo tên file là duy nhất
                         img_url = upload_to_discord(f, f.name)
                         if img_url:
                             image_urls.append(img_url)
@@ -1371,6 +1368,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
