@@ -1188,43 +1188,23 @@ elif menu == "Nhân viên":
             image_urls = row.get('Hình ảnh')
             
             # Khởi tạo modal_index nếu chưa có
-            if "modal_index" not in st.session_state:
-                st.session_state.modal_index = None
-            
-            if image_urls:
-                st.markdown("##### 📸 Hình ảnh phòng (Gallery nâng cấp)")
-            
-                cols = st.columns(3)
+            if image_urls and isinstance(image_urls, list) and len(image_urls) > 0:
+                st.markdown("##### 📸 Hình ảnh phòng (Google Cloud Storage)")
+                
+                # Chọn tất cả
+                select_all = st.checkbox("✅ Chọn tất cả ảnh", key=f"{ma_phong}_select_all")
+                
+                cols = st.columns(min(len(image_urls), 3))
+                selected_files = []
+                
                 for i, url in enumerate(image_urls):
                     with cols[i % 3]:
-                        try:
-                            res = requests.get(url)
-                            img = Image.open(BytesIO(res.content))
+                        # HIỂN THỊ ẢNH TRỰC TIẾP TỪ GOOGLE STORAGE
+                        st.image(url, caption=f"Ảnh {i+1}")
             
-                            # Resize và crop để ảnh đều bằng nhau
-                            img = img.convert("RGB")
-                            img.thumbnail((300, 150), Image.ANTIALIAS)
-                            
-                            # Tạo canvas trắng 300x150, căn giữa ảnh
-                            canvas = Image.new('RGB', (300, 150), (255, 255, 255))
-                            w, h = img.size
-                            canvas.paste(img, ((300 - w) // 2, (150 - h) // 2))
-            
-                            buf = BytesIO()
-                            canvas.save(buf, format="JPEG")
-                            img_base64 = base64.b64encode(buf.getvalue()).decode()
-            
-                            st.markdown(
-                                f"""
-                                <img src="data:image/jpeg;base64,{img_base64}" 
-                                     class="img-thumb"
-                                     onclick="window.parent.postMessage({{'type': 'open-modal', 'index': {i}}}, '*')" />
-                                <div class="img-caption">Ảnh {i+1}</div>
-                                """,
-                                unsafe_allow_html=True
-                            )
-                        except Exception as e:
-                            st.error(f"Không tải được ảnh {i+1}")
+                        selected = select_all or st.checkbox("Chọn ảnh", key=f"{ma_phong}_{i}")
+                        if selected:
+                            selected_files.append(url)
             
                 # Lắng nghe sự kiện mở modal
                 st.markdown("""
@@ -1479,6 +1459,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
