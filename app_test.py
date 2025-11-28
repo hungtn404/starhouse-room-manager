@@ -1402,57 +1402,155 @@ elif menu == 'CTV':
             st.write(f"**Hoa hồng:** {row.get('Hoa hồng','')}") # 👉 HIỂN THỊ HOA HỒNG RIÊNG
             st.write(f"**Ghi chú:** {row.get('Ghi chú','')}")
             
-            # 👉 HIỂN THỊ ẢNH GCS (ĐẸP – 3 ẢNH / 1 HÀNG)
-            image_urls = row.get('Hình ảnh')
+            # ==== CSS Lightbox ====
+            st.markdown("""
+            <style>
+                .img-thumb {
+                    border-radius: 10px;
+                    transition: transform 0.2s ease-in-out;
+                    cursor: pointer;
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+                    width: 100%;
+                    height: 150px;
+                    object-fit: cover;
+                    margin-bottom: 5px;
+                }
+                .img-caption {
+                    text-align: center;
+                    font-size: 13px;
+                    opacity: 0.8;
+                    margin-bottom: 15px;
+                }
             
+                /* MODAL */
+                .modal-bg {
+                    position: fixed;
+                    top: 0; left: 0;
+                    width: 100%; height: 100%;
+                    background: rgba(0,0,0,0.7);
+                    backdrop-filter: blur(3px);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    z-index: 9999;
+                }
+                .modal-img {
+                    max-width: 90%;
+                    max-height: 90%;
+                    border-radius: 12px;
+                    box-shadow: 0 0 20px rgba(255,255,255,0.3);
+                }
+                .modal-nav {
+                    color: white;
+                    font-size: 40px;
+                    position: fixed;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    cursor: pointer;
+                    padding: 10px;
+                    z-index: 10000;
+                    user-select: none;
+                }
+                .modal-prev { left: 20px; }
+                .modal-next { right: 20px; }
+            </style>
+            """, unsafe_allow_html=True)
+            
+            
+            # Lấy danh sách ảnh
+            image_urls = row.get("Hình ảnh")
+            
+            # Tạo state nếu chưa có
+            if "modal_index" not in st.session_state:
+                st.session_state.modal_index = None
+            
+            # ==== GRID HIỂN THỊ THUMBNAIL ====
             if image_urls and isinstance(image_urls, list) and len(image_urls) > 0:
             
-                # CSS đẹp cho gallery
-                st.markdown("""
-                    <style>
-                        .img-grid {
-                            display: grid;
-                            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-                            gap: 15px;
-                            margin-top: 10px;
-                        }
-                        .img-card {
-                            position: relative;
-                            overflow: hidden;
-                            border-radius: 12px;
-                            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                            cursor: pointer;
-                            transition: transform .2s ease-in-out;
-                            height: 160px;
-                        }
-                        .img-card:hover {
-                            transform: scale(1.03);
-                        }
-                        .img-card img {
-                            width: 100%;
-                            height: 100%;
-                            object-fit: cover;
-                        }
-                    </style>
-                """, unsafe_allow_html=True)
+                st.markdown("##### 📸 Hình ảnh phòng (Google Cloud Storage)")
             
-                st.markdown("##### 📸 Hình ảnh phòng")
-            
-                # Bắt đầu hiển thị gallery
-                st.markdown("<div class='img-grid'>", unsafe_allow_html=True)
+                cols = st.columns(3)
             
                 for i, url in enumerate(image_urls):
-                    st.markdown(
-                        f"""
-                        <div class="img-card">
-                            <img src="{url}" alt="image_{i}">
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
+                    with cols[i % 3]:
+                        if st.button(f"📷 Ảnh {i+1}", key=f"open_{ma_phong}_{i}"):
+                            st.session_state.modal_index = i
             
-                st.markdown("</div>", unsafe_allow_html=True)
-
+                        st.markdown(
+                            f"""
+                            <img src="{url}" class="img-thumb" onclick="window.parent.postMessage({{'index': {i}}}, '*')">
+                            <div class='img-caption'>Ảnh {i+1}</div>
+                            """,
+                            unsafe_allow_html=True
+                        )
+            
+            
+            # ==== XỬ LÝ JS CLICK → mở modal ====
+            st.markdown("""
+            <script>
+            window.addEventListener("message", (event) => {
+                if (event.data.index !== undefined) {
+                    const index = event.data.index;
+                    window.parent.postMessage(
+                        {type: "streamlit:rerun", "state": {"modal_index": index}}, 
+                        "*"
+                    );
+                }
+            });
+            </script>
+            """, unsafe_allow_html=True)
+            
+            
+            # ==== HIỂN THỊ MODAL ====
+            if st.session_state.modal_index is not None:
+            
+                cur = st.session_state.modal_index
+                img_url = image_urls[cur]
+            
+                img_data = requests.get(img_url).content
+                img_base64 = base64.b64encode(img_data).decode()
+            
+                # HTML modal
+                st.markdown(
+                    f"""
+                    <div class="modal-bg" onclick="window.parent.postMessage({{'close': true}}, '*')">
+                        <img class="modal-img" src="data:image/jpeg;base64,{img_base64}">
+                        <div class="modal-nav modal-prev"
+                             onclick="event.stopPropagation(); window.parent.postMessage({{'nav': 'prev'}}, '*')">&#10094;</div>
+                        <div class="modal-nav modal-next"
+                             onclick="event.stopPropagation(); window.parent.postMessage({{'nav': 'next'}}, '*')">&#10095;</div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+            
+            
+            # ==== JS XỬ LÝ ĐIỀU HƯỚNG VÀ ĐÓNG ====
+            st.markdown("""
+            <script>
+            window.addEventListener("message", (event) => {
+                if (event.data.close) {
+                    window.parent.postMessage({type: "streamlit:rerun", "state": {"modal_index": null}}, "*");
+                }
+                if (event.data.nav === "prev") {
+                    window.parent.postMessage({type: "streamlit:rerun", "state": {"modal_index": "prev"}}, "*");
+                }
+                if (event.data.nav === "next") {
+                    window.parent.postMessage({type: "streamlit:rerun", "state": {"modal_index": "next"}}, "*");
+                }
+            });
+            </script>
+            """, unsafe_allow_html=True)
+            
+            
+            # ==== XỬ LÝ NEXT / PREV ====
+            if st.session_state.modal_index == "prev":
+                st.session_state.modal_index = (cur - 1) % len(image_urls)
+                st.rerun()
+            
+            elif st.session_state.modal_index == "next":
+                st.session_state.modal_index = (cur + 1) % len(image_urls)
+                st.rerun()
             
             st.markdown("---")
 
@@ -1469,6 +1567,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
