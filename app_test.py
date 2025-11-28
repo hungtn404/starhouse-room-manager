@@ -761,23 +761,22 @@ if menu == "Admin":
 
                         # Nút LƯU ảnh
                         if st.button("💾 Lưu ảnh", key=f"save_{chon_id}"):
+                        
                             urls = []
-                            import os
-                            if not os.path.exists("uploads"):
-                                os.makedirs("uploads")
-
-                            # Lưu file vào thư mục
+                        
+                            # Upload từng file lên Discord
                             for file in uploaded_files:
-                                save_path = f"uploads/{chon_id}_{file.name}"
-                                with open(save_path, "wb") as f:
-                                    f.write(file.getbuffer())
-                                urls.append(save_path)
-
+                                img_url = upload_to_discord(file, file.name)
+                                if img_url:
+                                    urls.append(img_url)
+                                else:
+                                    st.error(f"❌ Upload thất bại: {file.name}")
+                        
                             # Load DF thật
                             df_real = load_data()
                             matches = df_real.index[df_real["ID"] == chon_id].tolist()
                             row_index = matches[0]
-
+                        
                             # Lấy ảnh cũ
                             old_imgs = df_real.at[row_index, "Hình ảnh"]
                             if isinstance(old_imgs, list):
@@ -786,19 +785,19 @@ if menu == "Admin":
                                 base = []
                             else:
                                 base = [old_imgs]
-
+                        
                             # Ghép ảnh mới
                             new_imgs = base + urls
                             df_real.at[row_index, "Hình ảnh"] = new_imgs
-
+                        
                             # Lưu dữ liệu
                             save_data(df_real)
-
-                            st.success("✅ Đã lưu ảnh vào Google Sheet!")
-
+                        
+                            st.success("✅ Upload ảnh Discord thành công!")
+                        
                             # Reset uploader sau lần rerun tiếp theo
                             st.session_state["reset_uploader"] = f"upload_{chon_id}"
-
+                        
                             st.rerun()
             
 
@@ -1368,6 +1367,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
