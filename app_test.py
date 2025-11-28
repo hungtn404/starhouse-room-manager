@@ -1232,15 +1232,17 @@ elif menu == "Nhân viên":
                     </script>
                 """, unsafe_allow_html=True)
 
-                if st.session_state.modal_index is not None:
-    
-                cur = st.session_state.modal_index
+            # MODAL VIEW — HIỂN THỊ ẢNH LỚN
+            if st.session_state.modal_index is not None:
             
-                # Tải ảnh gốc
-                img_data = requests.get(image_urls[cur]).content
+                cur = st.session_state.modal_index  # <-- dòng này cần indent đúng
+                img_url = image_urls[cur]
+            
+                # Tải ảnh gốc từ Discord
+                img_data = requests.get(img_url).content
                 img_base64 = base64.b64encode(img_data).decode()
             
-                # Render modal HTML
+                # Hiển thị modal
                 st.markdown(
                     f"""
                     <div class="modal-bg" onclick="window.parent.postMessage({{'type':'close-modal'}}, '*')">
@@ -1254,7 +1256,7 @@ elif menu == "Nhân viên":
                     unsafe_allow_html=True
                 )
             
-                # JS nhận nav sự kiện
+                # JavaScript điều khiển modal action
                 st.markdown("""
                     <script>
                     window.addEventListener("message", (event) => {
@@ -1271,14 +1273,14 @@ elif menu == "Nhân viên":
                     </script>
                 """, unsafe_allow_html=True)
             
-                # Xử lý điều hướng
+                # Điều hướng ảnh
                 if st.session_state.modal_index == "prev":
                     st.session_state.modal_index = (cur - 1) % len(image_urls)
                     st.rerun()
+            
                 elif st.session_state.modal_index == "next":
                     st.session_state.modal_index = (cur + 1) % len(image_urls)
                     st.rerun()
-
 elif menu == 'CTV':
     st.subheader("Nhân viên — Lọc & Xem")
     st.info("Nhân viên chỉ có thể **lọc** và **xem ĐỊA CHỈ** của phòng. Không có quyền chỉnh sửa.")
@@ -1475,6 +1477,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
