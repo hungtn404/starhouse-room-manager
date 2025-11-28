@@ -17,7 +17,7 @@ def upload_to_discord_bot(file_path, channel_id, bot_token):
         "Authorization": f"Bot {bot_token}"
     }
     with open(file_path, "rb") as f:
-        files = {"file": (file_path, f)}
+        files = {"file": (file.name, file.read())}
         resp = requests.post(url, headers=headers, files=files)
     if resp.status_code == 200:
         return resp.json()["attachments"][0]["url"]
@@ -1475,6 +1475,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
