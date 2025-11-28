@@ -11,48 +11,19 @@ from PIL import Image
 import requests
 from io import BytesIO
 
-def upload_to_discord(file, filename):
-    webhook = st.secrets["discord"]["webhook"]
-    bot_token = st.secrets["discord"]["bot_token"]  # bạn cần thêm token bot discord
-
-    files = {
-        "file": (filename, file.read())
-    }
-
-    # Gửi webhook upload ảnh
-    response = requests.post(webhook, files=files)
-    if response.status_code not in (200, 204):
-        st.error(f"❌ Upload Discord thất bại, code: {response.status_code}")
-        return None
-
-    # Lấy channel_id từ webhook URL
-    channel_id = webhook.split("/")[-2]
-
-    # Đợi 1-2 giây để Discord cập nhật message
-    time.sleep(2)
-
-    # Gọi API Discord lấy message cuối cùng của channel
-    url = f"https://discord.com/api/v10/channels/{channel_id}/messages?limit=1"
+def upload_to_discord_bot(file_path, channel_id, bot_token):
+    url = f"https://discord.com/api/v10/channels/{channel_id}/messages"
     headers = {
         "Authorization": f"Bot {bot_token}"
     }
-    resp = requests.get(url, headers=headers)
-    if resp.status_code != 200:
-        st.error("❌ Lấy message Discord thất bại")
+    with open(file_path, "rb") as f:
+        files = {"file": (file_path, f)}
+        resp = requests.post(url, headers=headers, files=files)
+    if resp.status_code == 200:
+        return resp.json()["attachments"][0]["url"]
+    else:
+        print(resp.text)
         return None
-
-    messages = resp.json()
-    if not messages:
-        st.error("❌ Không có message trong channel Discord")
-        return None
-
-    attachments = messages[0].get("attachments", [])
-    if not attachments:
-        st.error("❌ Message Discord không có ảnh đính kèm")
-        return None
-
-    # Lấy URL ảnh CDN
-    return attachments[0]["url"]
 
 # DANH SÁCH TÀI KHOẢN NHÂN VIÊN
 # ============================
@@ -642,6 +613,10 @@ if menu == "Admin":
                 ghi_chu = st.text_area("Ghi chú (tùy chọn)", key="ghi_chu_key")
                 hoa_hong = st.text_input("Hoa hồng", key="hoa_hong_key") 
                 
+                # --- Discord info ---
+                DISCORD_CHANNEL_ID = st.secrets["discord"]["channel_id"]
+                DISCORD_BOT_TOKEN = st.secrets["discord"]["bot_token"]
+                
                 # Upload hình ảnh
                 uploaded_files = st.file_uploader(
                     "Upload ảnh phòng (jpg, png, jpeg)", 
@@ -649,13 +624,16 @@ if menu == "Admin":
                     accept_multiple_files=True
                 )
                 image_urls = []
-
+                
                 if uploaded_files:
                     for f in uploaded_files:
-                        img_url = upload_to_discord(f, f.name)
+                        # Sử dụng hàm upload_to_discord_bot
+                        img_url = upload_to_discord_bot(f, DISCORD_CHANNEL_ID, DISCORD_BOT_TOKEN)
                         if img_url:
                             image_urls.append(img_url)
-
+                        else:
+                            st.error(f"❌ Không upload được ảnh: {f.name}")
+                
                 submitted = st.form_submit_button("Lưu phòng", on_click=reset_add_form)
             if submitted:
                 # 1. Kiểm tra dữ liệu chung
@@ -1497,6 +1475,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
