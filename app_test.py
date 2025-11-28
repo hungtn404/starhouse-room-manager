@@ -748,38 +748,38 @@ if menu == "Admin":
 
                 if chon_id:
                     st.markdown(f"### 📤 Upload ảnh cho ID **{chon_id}**")
-
-                    # Hiện uploader (không lưu ngay)
+                
                     uploaded_files = st.file_uploader(
                         "Tải ảnh lên:",
                         accept_multiple_files=True,
                         key=f"upload_{chon_id}"
                     )
-
-                    # Nếu có file → show danh sách đang chờ lưu
+                
                     if uploaded_files:
                         st.info("📌 Ảnh đã chọn (chưa lưu):")
                         for file in uploaded_files:
                             st.write(f"• {file.name}")
-
-                        # Nút LƯU ảnh
+                
                         if st.button("💾 Lưu ảnh", key=f"save_{chon_id}"):
-                        
+                
                             urls = []
-                        
-                            # Upload từng file lên Discord
+                
+                            # Tên bucket từ secrets
+                            GCS_BUCKET_NAME = st.secrets["gcs_bucket_name"]
+                
+                            # Upload từng file lên GCS
                             for file in uploaded_files:
-                                img_url = upload_to_discord(file, file.name)
+                                img_url = upload_to_gcs(GCS_BUCKET_NAME, file, file.name)
                                 if img_url:
                                     urls.append(img_url)
                                 else:
                                     st.error(f"❌ Upload thất bại: {file.name}")
-                        
+                
                             # Load DF thật
                             df_real = load_data()
                             matches = df_real.index[df_real["ID"] == chon_id].tolist()
                             row_index = matches[0]
-                        
+                
                             # Lấy ảnh cũ
                             old_imgs = df_real.at[row_index, "Hình ảnh"]
                             if isinstance(old_imgs, list):
@@ -788,20 +788,21 @@ if menu == "Admin":
                                 base = []
                             else:
                                 base = [old_imgs]
-                        
-                            # Ghép ảnh mới
+                
+                            # Thêm ảnh mới
                             new_imgs = base + urls
                             df_real.at[row_index, "Hình ảnh"] = new_imgs
-                        
-                            # Lưu dữ liệu
+                
+                            # Lưu vào Google Sheet
                             save_data(df_real)
-                        
-                            st.success("✅ Upload ảnh Discord thành công!")
-                        
-                            # Reset uploader sau lần rerun tiếp theo
+                
+                            st.success("✅ Upload ảnh GCS thành công!")
+                
+                            # Reset uploader
                             st.session_state["reset_uploader"] = f"upload_{chon_id}"
-                        
+                
                             st.rerun()
+
             
 
         with tab3:
@@ -1479,6 +1480,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
