@@ -16,9 +16,8 @@ def upload_to_discord_bot(file_path, channel_id, bot_token):
     headers = {
         "Authorization": f"Bot {bot_token}"
     }
-    with open(file_path, "rb") as f:
-        files = {"file": (file.name, file.read())}
-        resp = requests.post(url, headers=headers, files=files)
+    files = {"file": (file.name, file.read())}
+    resp = requests.post(url, headers=headers, files=files)
     if resp.status_code == 200:
         return resp.json()["attachments"][0]["url"]
     else:
@@ -623,16 +622,16 @@ if menu == "Admin":
                     type=["jpg", "png", "jpeg"], 
                     accept_multiple_files=True
                 )
+                
                 image_urls = []
                 
                 if uploaded_files:
                     for f in uploaded_files:
-                        # Sử dụng hàm upload_to_discord_bot
                         img_url = upload_to_discord_bot(f, DISCORD_CHANNEL_ID, DISCORD_BOT_TOKEN)
                         if img_url:
                             image_urls.append(img_url)
                         else:
-                            st.error(f"❌ Không upload được ảnh: {f.name}")
+                            st.error(f"Không upload được ảnh: {f.name}")
                 
                 submitted = st.form_submit_button("Lưu phòng", on_click=reset_add_form)
             if submitted:
@@ -1475,6 +1474,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
