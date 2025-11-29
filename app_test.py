@@ -500,8 +500,22 @@ if menu == "Admin":
                     "Phú Nhuận": ["Phường 1", "Phường 2", "Phường 3", "Phường 4", "Phường 5", "Phường 7", "Phường 8", "Phường 9", "Phường 10", "Phường 11", "Phường 13", "Phường 15", "Phường 17"],
                     "Quận 12": ["Phường An Phú Đông", "Phường Đông Hưng Thuận", "Phường Hiệp Thành", "Phường Tân Chánh Hiệp", "Phường Tân Thới Hiệp", "Phường Tân Thới Nhất", "Phường Thạnh Lộc", "Phường Thạnh Xuân", "Phường Tân Hưng Thuận", "Phường Thới An", "Phường Trung Mỹ Tây"]  # Nếu chưa có dữ liệu
                 }
-                quan = st.selectbox("Quận", list(quan_to_phuong.keys()), key="quan_key")
-                phuong_options = quan_to_phuong[quan]
+                # Khởi tạo Session State nếu chưa có
+                if "quan_key" not in st.session_state:
+                    st.session_state["quan_key"] = "Gò Vấp"
+                
+                # Chọn Quận
+                quan = st.selectbox(
+                    "Quận",
+                    list(quan_to_phuong.keys()),
+                    key="quan_key",
+                    on_change=lambda: st.session_state.update({"phuong_key": ""})  # Reset phường khi đổi quận
+                )
+                
+                # Lấy danh sách phường theo quận đã chọn
+                phuong_options = quan_to_phuong[st.session_state["quan_key"]]
+                
+                # Chọn Phường
                 if phuong_options:
                     phuong = st.selectbox("Phường", phuong_options, key="phuong_key")
                 else:
@@ -1608,6 +1622,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
