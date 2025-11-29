@@ -8,6 +8,9 @@ import streamlit as st
 import pandas as pd
 import base64, requests
 from google.cloud import storage
+from streamlit_js_eval import streamlit_js_eval
+import urllib.parse, json
+
 
 def upload_to_gcs(bucket_name, file_data, file_name):
     client = storage.Client.from_service_account_info(
@@ -1508,7 +1511,34 @@ elif menu == 'CTV':
                     """,
                     unsafe_allow_html=True
                 )
-
+                
+                # Lấy URL hiện tại của app
+                current_url = streamlit_js_eval(
+                    js_expressions="window.location.href",
+                    key=f"get_url_{ma_phong}"
+                )
+                
+                if current_url:
+                    root = current_url.split("?")[0]   # bỏ query string
+                
+                    # Mã hóa list ảnh
+                    encoded = urllib.parse.quote(json.dumps(image_urls))
+                
+                    # Link chia sẻ
+                    share_url = f"{root}?images={encoded}"
+                
+                    st.markdown("### 🔗 Link chia sẻ toàn bộ ảnh")
+                    st.code(share_url, language="text")
+                
+                    # Nút Copy
+                    st.button(
+                        "📋 Copy link",
+                        on_click=streamlit_js_eval,
+                        kwargs={
+                            "js_expressions": f"navigator.clipboard.writeText('{share_url}')",
+                            "key": f"copy_link_{ma_phong}"
+                        }
+                    )
             
             st.markdown("---")
 
@@ -1525,6 +1555,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
