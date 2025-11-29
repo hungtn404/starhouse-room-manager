@@ -1556,7 +1556,7 @@ elif menu == 'CTV':
 
                 
                 # Nút download
-                if st.button("📥 Tải tất cả ảnh"):  # chỉ trigger khi bấm
+                if st.button("📥 Tải tất cả ảnh", key=f"download_zip_{ma_phong}_{so_nha}"):
                     with st.spinner("Đang tạo ZIP..."):
                         zip_buffer = io.BytesIO()
                         with zipfile.ZipFile(zip_buffer, "w") as zf:
@@ -1566,12 +1566,12 @@ elif menu == 'CTV':
                                 zf.writestr(filename, response.content)
                         zip_buffer.seek(0)
                 
-                    # Hiển thị nút download ngay sau khi ZIP sẵn
                     st.download_button(
                         label="📥 Download ZIP",
                         data=zip_buffer,
                         file_name=f"{ma_phong}_{masked_so_nha}_{row.get('Đường','')}.zip",
-                        mime="application/zip"
+                        mime="application/zip",
+                        key=f"dlzip_{ma_phong}_{so_nha}"
                     )
             
             st.markdown("---")
@@ -1589,6 +1589,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
