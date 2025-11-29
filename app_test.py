@@ -1569,7 +1569,7 @@ elif menu == 'CTV':
 
                 # Lấy URL hiện tại của trang
                 current_url = streamlit_js_eval(
-                    js_expressions="window.location.href",
+                    js_expressions="window.parent.location.href",
                     key=f"url_{ma_phong}"
                 )
                 
@@ -1611,6 +1611,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
