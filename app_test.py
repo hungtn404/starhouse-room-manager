@@ -1555,21 +1555,22 @@ elif menu == 'CTV':
                 )
 
                 # Tạo ZIP trong bộ nhớ
-                zip_buffer = io.BytesIO()
-                with zipfile.ZipFile(zip_buffer, "w") as zf:
-                    for url in image_urls:
-                        filename = url.split("/")[-1]
-                        response = requests.get(url, stream=True)
-                        zf.writestr(filename, response.content)
-                zip_buffer.seek(0)
-                
-                # Dùng 1 nút download duy nhất, nhãn là "📥 Tải tất cả ảnh"
-                st.download_button(
-                    label="📥 Tải tất cả ảnh",
-                    data=zip_buffer,
-                    file_name=(f"{ma_phong} - {masked_so_nha}, {row.get('Đường','')}"),
-                    mime="application/zip"
-                )
+                with st.spinner("Đang tạo ZIP..."):
+                    zip_buffer = io.BytesIO()
+                    with zipfile.ZipFile(zip_buffer, "w") as zf:
+                        for url in image_urls:
+                            filename = url.split("/")[-1]
+                            response = requests.get(url, stream=True)
+                            zf.writestr(filename, response.content)
+                    zip_buffer.seek(0)
+                    
+                    # Dùng 1 nút download duy nhất, nhãn là "📥 Tải tất cả ảnh"
+                    st.download_button(
+                        label="📥 Tải tất cả ảnh",
+                        data=zip_buffer,
+                        file_name=(f"{ma_phong} - {masked_so_nha}, {row.get('Đường','')}"),
+                        mime="application/zip"
+                    )
             
             st.markdown("---")
 
@@ -1586,6 +1587,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
