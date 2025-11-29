@@ -1129,7 +1129,7 @@ elif menu == "Nhân viên":
 
             if image_urls and isinstance(image_urls, list) and len(image_urls) > 0:
             
-                st.markdown("##### 📸 Hình ảnh phòng (Google Cloud Storage)")
+                st.markdown("##### 📸 Hình ảnh phòng")
             
                 modal_key = f"modal_{ma_phong}"
             
@@ -1389,7 +1389,7 @@ elif menu == 'CTV':
 
             if image_urls and isinstance(image_urls, list) and len(image_urls) > 0:
             
-                st.markdown("##### 📸 Hình ảnh phòng (Google Cloud Storage)")
+                st.markdown("##### 📸 Hình ảnh phòng")
             
                 modal_key = f"modal_{ma_phong}"
             
@@ -1525,6 +1525,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
