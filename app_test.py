@@ -1279,22 +1279,25 @@ elif menu == "Nhân viên":
                     unsafe_allow_html=True
                 )
 
-                # Tạo ZIP trong bộ nhớ
-                zip_buffer = io.BytesIO()
-                with zipfile.ZipFile(zip_buffer, "w") as zf:
-                    for url in image_urls:
-                        filename = url.split("/")[-1]
-                        response = requests.get(url)
-                        zf.writestr(filename, response.content)
-                zip_buffer.seek(0)
+                # Nút download
+                if st.button("📥 Tải tất cả ảnh", key=f"btn_download_{ma_phong}_{row.get('Số nhà','')}"):
+                    with st.spinner("Đang tạo file..."):
+                        zip_buffer = io.BytesIO()
+                        with zipfile.ZipFile(zip_buffer, "w") as zf:
+                            for url in image_urls:
+                                filename = url.split("/")[-1]
+                                response = requests.get(url, stream=True)
+                                zf.writestr(filename, response.content)
+                        zip_buffer.seek(0)
                 
-                # Dùng 1 nút download duy nhất, nhãn là "📥 Tải tất cả ảnh"
-                st.download_button(
-                    label="📥 Tải tất cả ảnh",
-                    data=zip_buffer,
-                    file_name=(f"{ma_phong} - {row.get('Số nhà','')}, {row.get('Đường','')}"),
-                    mime="application/zip"
-                )
+                    st.download_button(
+                        label="✅ Nhấn để tải về",
+                        data=zip_buffer,
+                        file_name=f"{ma_phong}-{row.get('Số nhà','')}_{row.get('Đường','')}.zip",
+                        mime="application/zip",
+                        key=f"dlzip_{ma_phong}_{row.get('Số nhà','')}"
+                    )
+                    
 elif menu == 'CTV':
     df = load_data()
 
@@ -1569,7 +1572,7 @@ elif menu == 'CTV':
                     st.download_button(
                         label="✅ Nhấn để tải về",
                         data=zip_buffer,
-                        file_name=f"{ma_phong}_{masked_so_nha}_{row.get('Đường','')}.zip",
+                        file_name=f"{ma_phong}-{masked_so_nha}_{row.get('Đường','')}.zip",
                         mime="application/zip",
                         key=f"dlzip_{ma_phong}_{masked_so_nha}"
                     )
@@ -1590,6 +1593,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
