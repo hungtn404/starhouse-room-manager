@@ -1567,7 +1567,7 @@ elif menu == 'CTV':
                         zip_buffer.seek(0)
                 
                     st.download_button(
-                        label="📥 Download ZIP",
+                        label="Nhấn để tải về",
                         data=zip_buffer,
                         file_name=f"{ma_phong}_{masked_so_nha}_{row.get('Đường','')}.zip",
                         mime="application/zip",
@@ -1588,6 +1588,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
