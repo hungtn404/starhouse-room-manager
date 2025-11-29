@@ -1509,45 +1509,55 @@ elif menu == 'CTV':
                     unsafe_allow_html=True
                 )
 
-                # ==== SHARE ALL IMAGES IN ONE LINK (NO SECRETS NEEDED) ====
-
-                import urllib.parse
-                
-                # Lấy URL gốc của app
-                base_url = st.experimental_get_query_params()
-                current_page = st.get_url()
-                
-                # Tự động tạo URL /viewer
-                root = current_page.split("?")[0]  # bỏ query string
-                viewer_url = root + "?page=viewer"
-                
-                # Encode danh sách ảnh
-                encoded_images = urllib.parse.quote(json.dumps(image_urls))
-                
-                # Link chia sẻ cuối cùng
-                share_link = f"{viewer_url}&images={encoded_images}"
-                
-                st.markdown("#### 🔗 Link chia sẻ toàn bộ ảnh")
-                st.code(share_link, language="text")
-                
-                st.markdown(
-                    f"""
-                    <button onclick="navigator.clipboard.writeText('{share_link}'); 
-                                     alert('Đã copy link chia sẻ!');"
-                            style="
-                                background:#4CAF50;
-                                color:white;
-                                padding:10px 16px;
-                                border:none;
-                                border-radius:8px;
-                                cursor:pointer;
-                                margin-top:6px;
-                            ">
-                        📋 Copy Link
-                    </button>
-                    """,
-                    unsafe_allow_html=True
-                )
+                def get_current_url():
+                try:
+                    from streamlit.runtime.scriptrunner import get_script_run_ctx
+                    ctx = get_script_run_ctx()
+                    if ctx is None:
+                        return None
+                    return ctx.request.url
+                except:
+                    return None
+            
+            current_page = get_current_url()
+            
+            if current_page is None:
+                current_page = ""  # fallback khi chạy local
+            
+            # Bỏ query string đi
+            root = current_page.split("?")[0]
+            
+            # Tạo URL trang viewer
+            viewer_url = root + "?page=viewer"
+            
+            # Encode danh sách ảnh
+            encoded_images = urllib.parse.quote(json.dumps(image_urls))
+            
+            # Link chia sẻ cuối cùng
+            share_link = f"{viewer_url}&images={encoded_images}"
+            
+            st.markdown("#### 🔗 Link chia sẻ toàn bộ ảnh")
+            st.code(share_link, language="text")
+            
+            # Copy button
+            st.markdown(
+                f"""
+                <button onclick="navigator.clipboard.writeText('{share_link}'); 
+                                 alert('Đã copy link chia sẻ!');"
+                        style="
+                            background:#4CAF50;
+                            color:white;
+                            padding:10px 16px;
+                            border:none;
+                            border-radius:8px;
+                            cursor:pointer;
+                            margin-top:6px;
+                        ">
+                    📋 Copy Link
+                </button>
+                """,
+                unsafe_allow_html=True
+            )
 
 
 
@@ -1567,6 +1577,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
