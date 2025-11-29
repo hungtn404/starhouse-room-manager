@@ -1479,32 +1479,16 @@ elif menu == 'CTV':
                 for i, url in enumerate(image_urls):
                     with cols[i % 3]:
                         safe_url = url.replace('"', '%22')
-                        filename = url.split("/")[-1]
-                
+
                         st.markdown(
                             f"""
-                            <div style="position: relative; display: inline-block; width: 100%;">
-                                <img src="{safe_url}"
-                                     class="gallery-img"
-                                     onclick="
-                                        document.getElementById('{modal_key}').style.display='flex';
-                                        document.getElementById('{modal_key}_img').src='{safe_url}';
-                                        window.currentIndex_{modal_key} = {i};
-                                     ">
-                                <a href="{safe_url}" download="{filename}" 
-                                   style="
-                                       position: absolute;
-                                       top: 8px;
-                                       right: 8px;
-                                       background: rgba(0,0,0,0.6);
-                                       color: white;
-                                       padding: 4px 8px;
-                                       border-radius: 6px;
-                                       font-size: 14px;
-                                       text-decoration: none;
-                                       z-index: 10;
-                                   ">📥</a>
-                            </div>
+                            <img src="{safe_url}"
+                                 class="gallery-img"
+                                 onclick="
+                                    document.getElementById('{modal_key}').style.display='flex';
+                                    document.getElementById('{modal_key}_img').src='{safe_url}';
+                                    window.currentIndex_{modal_key} = {i};
+                                 ">
                             """,
                             unsafe_allow_html=True
                         )
@@ -1555,27 +1539,6 @@ elif menu == 'CTV':
                     unsafe_allow_html=True
                 )
 
-                # st.markdown("### ⬇️ Tải ảnh")
-
-                # try:
-                #     import requests
-                #     from io import BytesIO
-                
-                #     for i, url in enumerate(image_urls):
-                #         filename = url.split("/")[-1]
-                #         response = requests.get(url)
-                #         img_bytes = BytesIO(response.content)
-                
-                #         st.download_button(
-                #             label=f"📥",
-                #             data=img_bytes,
-                #             file_name=filename,
-                #             mime="image/jpeg",
-                #             key=f"download_all_{modal_key}_{i}"
-                #         )
-                
-                # except Exception as e:
-                #     st.warning(f"Không tải được ảnh: {e}")
             
             st.markdown("---")
 
@@ -1592,6 +1555,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
