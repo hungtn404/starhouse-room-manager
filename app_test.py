@@ -11,32 +11,32 @@ from google.cloud import storage
 from streamlit_js_eval import streamlit_js_eval
 import urllib.parse, json
 
-# def render_image_viewer():
-#     st.title("🖼️ Image Viewer")
+def render_image_viewer():
+    st.title("🖼️ Image Viewer")
 
-#     query_params = st.query_params
-#     if "images" not in query_params:
-#         st.warning("❗ Không tìm thấy danh sách ảnh trong URL.")
-#         return
+    query_params = st.query_params
+    if "images" not in query_params:
+        st.warning("❗ Không tìm thấy danh sách ảnh trong URL.")
+        return
 
-#     try:
-#         encoded = query_params["images"]
-#         image_urls = json.loads(urllib.parse.unquote(encoded))
-#     except:
-#         st.error("Lỗi giải mã dữ liệu ảnh!")
-#         return
+    try:
+        encoded = query_params["images"]
+        image_urls = json.loads(urllib.parse.unquote(encoded))
+    except:
+        st.error("Lỗi giải mã dữ liệu ảnh!")
+        return
 
-#     st.success(f"Tải {len(image_urls)} ảnh thành công!")
-#     cols = st.columns(3)
-#     for i, url in enumerate(image_urls):
-#         with cols[i % 3]:
-#             st.image(url, use_column_width=True)
-#             st.caption(url)
+    st.success(f"Tải {len(image_urls)} ảnh thành công!")
+    cols = st.columns(3)
+    for i, url in enumerate(image_urls):
+        with cols[i % 3]:
+            st.image(url, use_column_width=True)
+            st.caption(url)
 
-# # Tự động bật viewer nếu URL có ?images=
-# if "images" in st.query_params:
-#     render_image_viewer()
-#     st.stop()
+# Tự động bật viewer nếu URL có ?images=
+if "images" in st.query_params:
+    render_image_viewer()
+    st.stop()
 
 
 def upload_to_gcs(bucket_name, file_data, file_name):
@@ -1611,6 +1611,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
