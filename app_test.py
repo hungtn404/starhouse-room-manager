@@ -398,6 +398,113 @@ if menu == "Admin":
         tab1, tab2, tab3, tab4 = st.tabs(["Thêm phòng", "Danh sách & chỉnh sửa", "Import / Export", "Lọc phòng"])
 
         with tab1:
+            GOVAP = {
+                "Phường": [
+                    "Phường 1","Phường 3","Phường 4","Phường 5","Phường 6","Phường 7",
+                    "Phường 8","Phường 9","Phường 10","Phường 11","Phường 12",
+                    "Phường 13","Phường 14","Phường 15","Phường 16","Phường 17"
+                ],
+                "Đường": [
+                    "An Hội","An Nhơn","Bùi Quang Là","Bạch Đằng","Cây Trâm","Đỗ Thúc Tịnh",
+                    "Đường 26 Tháng 3","Dương Quang Hàm",
+                    "Đường số 1","Đường số 2","Đường số 3","Đường số 4","Đường số 5",
+                    "Đường số 6","Đường số 7","Đường số 8","Đường số 9","Đường số 10",
+                    "Đường số 11","Đường số 12","Đường số 13","Đường số 14","Đường số 15",
+                    "Đường số 17","Đường số 18","Đường số 19","Đường số 20","Đường số 21",
+                    "Đường số 22","Đường số 23","Đường số 24","Đường số 25","Đường số 27",
+                    "Đường số 28","Đường số 29","Đường số 30","Đường số 31","Đường số 32",
+                    "Đường số 35","Đường số 38","Đường số 43","Đường số 45","Đường số 46",
+                    "Đường số 47","Đường số 50","Đường số 51","Đường số 53","Đường số 55",
+                    "Đường số 56","Đường số 57","Đường số 58","Đường số 59",
+                    "Hạnh Thông","Hạnh Thông Tây","Hoàng Hoa Thám","Hoàng Minh Giám",
+                    "Huỳnh Khương An","Huỳnh Văn Nghệ","Lê Đức Thọ","Lê Hoàng Phái","Lê Lai",
+                    "Lê Lợi","Lê Quang Định","Lê Thị Hồng","Lê Văn Thọ","Lê Văn Trị",
+                    "Lương Ngọc Quyến","Lý Thường Kiệt","Nguyễn Bỉnh Khiêm","Nguyễn Du",
+                    "Nguyễn Duy Cung","Nguyễn Hữu Thọ","Nguyễn Huy Điển","Nguyễn Kiệm",
+                    "Nguyễn Oanh","Nguyễn Thái Sơn","Nguyễn Thị Nhỏ","Nguyễn Thượng Hiền",
+                    "Nguyễn Tư Giản","Nguyễn Tuân","Nguyễn Văn Bảo","Nguyễn Văn Công",
+                    "Nguyễn Văn Dung","Nguyễn Văn Lượng","Nguyễn Văn Nghi",
+                    "Nguyên Hồng","Phạm Huy Thông","Phạm Ngũ Lão","Phạm Văn Bạch",
+                    "Phạm Văn Chiêu","Phạm Văn Đồng","Phan Huy Ích","Phan Văn Trị",
+                    "Phùng Văn Cung","Quang Trung","Tân Sơn","Tân Thọ","Thích Bửu Đăng",
+                    "Thiên Hộ Dương","Thống Nhất","Thông Tây Hội","Tô Ngọc Vân",
+                    "Trần Bá Giao","Trần Bình Trọng","Trần Phú Cương","Trần Quốc Tuấn",
+                    "Trần Thị Nghĩ","Trưng Nữ Vương","Trương Đăng Quế","Trương Minh Giảng",
+                    "Trương Minh Ký","Tú Mỡ","Nguyễn Văn Khối"
+                ]
+            }
+            TANBINH = {
+                "Phường": [
+                    "Phường 1","Phường 2","Phường 3","Phường 4","Phường 5","Phường 6",
+                    "Phường 7","Phường 8","Phường 9","Phường 10","Phường 11","Phường 12",
+                    "Phường 13","Phường 14","Phường 15"
+                ],
+                "Đường": [
+                    "Cộng Hòa","Hoàng Hoa Thám","Hoàng Văn Thụ","Trường Sơn","Bạch Đằng",
+                    "Lạc Long Quân","Âu Cơ","Nguyễn Hồng Đào","Ba Vân","Lý Thường Kiệt",
+                    "Bắc Hải","Lê Bình","Tân Sơn","Trường Chinh","Phạm Văn Bạch",
+                    "Tô Hiến Thành","Cách Mạng Tháng 8","Thăng Long","Út Tịch",
+                    "Lê Trung Nghĩa","Lê Tấn Quốc","Hoàng Sa","Trường Sa"
+                ]
+            }
+            BINHTHANH = {
+                "Phường": [
+                    "Phường 1","Phường 2","Phường 3","Phường 5","Phường 6","Phường 7",
+                    "Phường 11","Phường 12","Phường 13","Phường 14","Phường 15",
+                    "Phường 17","Phường 19","Phường 21","Phường 22","Phường 24",
+                    "Phường 25","Phường 26","Phường 27","Phường 28"
+                ],
+                "Đường": [
+                    "Điện Biên Phủ","Xô Viết Nghệ Tĩnh","Ung Văn Khiêm","Chu Văn An",
+                    "Phan Đăng Lưu","Nguyễn Văn Đậu","Nguyễn Hữu Cảnh","Đinh Bộ Lĩnh",
+                    "Nguyễn Xí","Phan Xích Long","Nguyễn Gia Trí (D2)","Lê Quang Định",
+                    "Phan Văn Trị","Tôn Đức Thắng","Ngô Tất Tố","Phạm Văn Đồng"
+                ]
+            }
+            PHUNHUAN = {
+                "Phường": [
+                    "Phường 1","Phường 2","Phường 3","Phường 4","Phường 5","Phường 7",
+                    "Phường 8","Phường 9","Phường 10","Phường 11","Phường 12",
+                    "Phường 13","Phường 15","Phường 17"
+                ],
+                "Đường": [
+                    "Phan Xích Long","Nguyễn Văn Trỗi","Huỳnh Văn Bánh",
+                    "Trương Quốc Dung","Nguyễn Kiệm","Đào Duy Anh","Lê Văn Sỹ",
+                    "Trần Huy Liệu","Thích Quảng Đức","Hoa Sứ","Hoa Lan","Hoa Phượng",
+                    "Hoa Cau","Hoa Sen","Hoa Hồng","Hoa Lài","Hoa Cúc",
+                    "Phan Đình Phùng","Vạn Kiếp","Đoàn Thị Điểm","Cô Bắc","Cô Giang",
+                    "Trần Kế Xương","Phùng Văn Cung","Nguyễn Đình Chính","Mai Văn Ngọc",
+                    "Trần Quang Diệu","Khu Dân Cư Miếu Nổi"
+                ]
+            }
+            QUAN12 = {
+                "Phường": [
+                    "Phường An Phú Đông","Phường Đông Hưng Thuận","Phường Hiệp Thành",
+                    "Phường Tân Chánh Hiệp","Phường Tân Hưng Thuận","Phường Tân Thới Hiệp",
+                    "Phường Tân Thới Nhất","Phường Thạnh Lộc","Phường Thạnh Xuân",
+                    "Phường Thới An","Phường Trung Mỹ Tây"
+                ],
+                "Đường": [
+                    "QL1A","Nguyễn Ảnh Thủ","Tô Ký","Lê Văn Khương","Hà Huy Giáp",
+                    "Nguyễn Văn Quá","Dương Thị Mười","Trường Chinh","Đông Bắc",
+                    "Song Hành QL22","Nguyễn Văn Khối","HT13","HT17",
+                    "TA13","TA19","TA20","TX52","Vườn Lài"
+                ]
+            }
+            
+            QUAN_DATA = {
+                "Gò Vấp": GOVAP,
+                "Tân Bình": TANBINH,
+                "Bình Thạnh": BINHTHANH,
+                "Phú Nhuận": PHUNHUAN,
+                "12": QUAN12
+            }
+            
+            quan = st.selectbox("Quận", list(QUAN_DATA.keys()))
+            
+            phuong = st.selectbox("Phường", QUAN_DATA[quan]["Phường"])
+            
+            duong = st.selectbox("Đường", QUAN_DATA[quan]["Đường"])
             st.markdown("### ➕ Thêm phòng mới")
 
             if 'phong_con_list' not in st.session_state:
@@ -490,50 +597,6 @@ if menu == "Admin":
                 st.markdown("---")
             with st.form("add_form"):
                 so_nha = st.text_input("Số nhà", placeholder="Ví dụ: 745/10/5", key="so_nha_key")
-                df_tmp = load_data()
-                street_options = sorted([s for s in df_tmp['Đường'].dropna().unique().tolist()]) if (not df_tmp.empty and 'Đường' in df_tmp.columns) else []
-                default_streets = [
-    "An Hội", "An Nhơn", "Bùi Quang Là", "Bạch Đằng", "Cây Trâm",
-    "Đỗ Thúc Tịnh", "Đường 26 Tháng 3", "Dương Quảng Hàm", "Đường số 1",
-    "Đường số 2", "Đường số 3", "Đường số 4", "Đường số 5",
-    "Đường số 6", "Đường số 7", "Đường số 8", "Đường số 9", "Đường số 10",
-    "Đường số 11", "Đường số 12", "Đường số 13", "Đường số 14", "Đường số 15",
-    "Đường số 17", "Đường số 18", "Đường số 19", "Đường số 20", "Đường số 21",
-    "Đường số 22", "Đường số 23", "Đường số 24", "Đường số 25", "Đường số 27",
-    "Đường số 28", "Đường số 29", "Đường số 30", "Đường số 31", "Đường số 32",
-    "Đường số 35", "Đường số 38", "Đường số 43", "Đường số 45", "Đường số 46",
-    "Đường số 47", "Đường số 50", "Đường số 51", "Đường số 53", "Đường số 55",
-    "Đường số 56", "Đường số 57", "Đường số 58", "Đường số 59", "Hạnh Thông",
-    "Hạnh Thông Tây", "Hoàng Hoa Thám", "Hoàng Minh Giám", "Huỳnh Khương An",
-    "Huỳnh Văn Nghệ", "Lê Đức Thọ", "Lê Hoàng Phái", "Lê Lai", "Lê Lợi",
-    "Lê Quang Định", "Lê Thị Hồng", "Lê Văn Thọ", "Lê Văn Trị", "Lương Ngọc Quyến",
-    "Lý Thường Kiệt", "Nguyễn Bỉnh Khiêm", "Nguyễn Du", "Nguyễn Duy Cung",
-    "Nguyễn Hữu Thọ", "Nguyễn Huy Điển", "Nguyễn Kiệm", "Nguyễn Oanh",
-    "Nguyễn Thái Sơn", "Nguyễn Thị Nhỏ", "Nguyễn Thượng Hiền", "Nguyễn Tư Giản",
-    "Nguyễn Tuân", "Nguyễn Văn Bảo", "Nguyễn Văn Công", "Nguyễn Văn Dung",
-    "Nguyễn Văn Lượng", "Nguyễn Văn Nghi", "Nguyên Hồng", "Phạm Huy Thông",
-    "Phạm Ngũ Lão", "Phạm Văn Bạch", "Phạm Văn Chiêu", "Phạm Văn Đồng",
-    "Phan Huy Ích", "Phan Văn Trị", "Phùng Văn Cung", "Quang Trung",
-    "Tân Sơn", "Tân Thọ", "Thích Bửu Đăng", "Thiên Hộ Dương", "Thống Nhất",
-    "Thông Tây Hội", "Tô Ngọc Vân", "Trần Bá Giao", "Trần Bình Trọng",
-    "Trần Phú Cương", "Trần Quốc Tuấn", "Trần Thị Nghĩ", "Trưng Nữ Vương",
-    "Trương Đăng Quế", "Trương Minh Giảng", "Trương Minh Ký", "Tú Mỡ",
-    "Nguyễn Văn Khối"
-                ]
-                # merge while keeping unique order
-                seen = set()
-                combined_streets = []
-                for s in default_streets + street_options:
-                    if s not in seen:
-                        seen.add(s); combined_streets.append(s)
-
-                duong = st.selectbox("Tên Đường", combined_streets, key="duong_key")
-                phuong = st.selectbox("Phường", [
-                    "Phường 1", "Phường 3", "Phường 4", "Phường 5", "Phường 6", "Phường 7",
-                    "Phường 8", "Phường 9", "Phường 10", "Phường 11", "Phường 12",
-                    "Phường 13", "Phường 14", "Phường 15", "Phường 16", "Phường 17"
-                ], key="phuong_key")
-                quan = st.selectbox("Quận", ["Gò Vấp", "Tân Bình", "Bình Thạnh", "12"], key="quan_key")
   
                 noi_that = st.multiselect("Nội thất", ["Máy lạnh", "Kệ bếp", "Tủ đồ", "Tủ lạnh", "Giường", "Pallet", "Nệm", "Bàn Ghế", "Nước nóng NLMT", "Nước nóng Điện", "Tivi", "Máy giặt"], key="noi_that_key")
                 tien_ich = st.multiselect("Tiện ích", ["Cổng vân tay", "Camera 24/7", "Vệ sinh chung", "Giờ giấc tự do", "Không chung chủ", "Máy giặt chung", "Thang máy"], key="tien_ich_key")
@@ -1500,6 +1563,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
