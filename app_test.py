@@ -571,7 +571,7 @@ if menu == "Admin":
     "Trần Phú Cương", "Trần Quốc Tuấn", "Trần Thị Nghĩ", "Trưng Nữ Vương",
     "Trương Đăng Quế", "Trương Minh Giảng", "Trương Minh Ký", "Tú Mỡ",
     "Nguyễn Văn Khối"
-]
+                ]
                 # merge while keeping unique order
                 seen = set()
                 combined_streets = []
@@ -1552,6 +1552,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
