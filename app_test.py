@@ -1540,20 +1540,27 @@ elif menu == 'CTV':
                     unsafe_allow_html=True
                 )
 
-                st.markdown("### ⬇️ Tải từng ảnh trong gallery")
+                st.markdown("### ⬇️ Tải ảnh")
 
-                if st.button("⬇️ Hiện tất cả nút tải ảnh"):
+                try:
+                    import requests
+                    from io import BytesIO
+                
                     for i, url in enumerate(image_urls):
                         filename = url.split("/")[-1]
                         response = requests.get(url)
                         img_bytes = BytesIO(response.content)
+                
                         st.download_button(
-                            label=f"📥 {filename}",
+                            label=f"📥",
                             data=img_bytes,
                             file_name=filename,
                             mime="image/jpeg",
-                            key=f"download_{i}"
+                            key=f"download_all_{modal_key}_{i}"
                         )
+                
+                except Exception as e:
+                    st.warning(f"Không tải được ảnh: {e}")
  
                 # # Lấy URL hiện tại của app
                 # current_url = streamlit_js_eval(
@@ -1617,6 +1624,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
