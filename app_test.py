@@ -12,6 +12,17 @@ from streamlit_js_eval import streamlit_js_eval
 import io, zipfile, requests
 from io import BytesIO
 
+# Hàm tạo ZIP on-the-fly
+def create_zip():
+    zip_buffer = io.BytesIO()
+    with zipfile.ZipFile(zip_buffer, "w") as zf:
+        for url in image_urls:
+            filename = url.split("/")[-1]
+            response = requests.get(url, stream=True)
+            zf.writestr(filename, response.content)
+    zip_buffer.seek(0)
+    return zip_buffer
+
 # def render_image_viewer():
 #     st.title("🖼️ Image Viewer")
 
@@ -1554,16 +1565,6 @@ elif menu == 'CTV':
                     unsafe_allow_html=True
                 )
 
-                # Tạo ZIP trong bộ nhớ
-                def create_zip():
-                    zip_buffer = io.BytesIO()
-                    with zipfile.ZipFile(zip_buffer, "w") as zf:
-                        for url in image_urls:
-                            filename = url.split("/")[-1]
-                            response = requests.get(url, stream=True)
-                            zf.writestr(filename, response.content)
-                    zip_buffer.seek(0)
-                    return zip_buffer
                 
                 # Nút download
                 st.download_button(
@@ -1588,6 +1589,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
