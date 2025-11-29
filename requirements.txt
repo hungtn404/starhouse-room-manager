@@ -6,4 +6,5 @@ gspread-dataframe
 openpyxl
 google-cloud-storage
 requests
+streamlit-js-eval
 
