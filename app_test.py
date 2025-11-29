@@ -321,19 +321,19 @@ def save_data(df):
 # UI Main
 # -----------------------
 
-st.title("🏠 Quản lý nguồn phòng trọ - STARHOUSE (GSheets)")
+st.title("🏠 Quản lý nguồn phòng trọ - STARHOUSE")
 
-if gsheet_enabled():
-    st.success("🔗 Google Sheets: Đã bật cấu hình (gspread + secrets)")
-else:
-    st.warning("⛔ Google Sheets chưa sẵn sàng — dùng Excel fallback")
+# if gsheet_enabled():
+#     st.success("🔗 Google Sheets: Đã bật cấu hình (gspread + secrets)")
+# else:
+#     st.warning("⛔ Google Sheets chưa sẵn sàng — dùng Excel fallback")
 
-if st.button("Test kết nối Google Sheets"):
-    try:
-        sh, ws = connect_gsheet()
-        st.success(f"✔ Kết nối thành công!\nTên sheet: {sh.title}, Worksheet: {ws.title}")
-    except Exception as e:
-        st.error(f"❌ Không kết nối được: {e}")
+# if st.button("Test kết nối Google Sheets"):
+#     try:
+#         sh, ws = connect_gsheet()
+#         st.success(f"✔ Kết nối thành công!\nTên sheet: {sh.title}, Worksheet: {ws.title}")
+#     except Exception as e:
+#         st.error(f"❌ Không kết nối được: {e}")
 
 
 menu = st.sidebar.radio("Chế độ", ["Admin", "Nhân viên", "CTV"])
@@ -348,13 +348,10 @@ except Exception:
 # Admin mode
 # -----------------------
 if menu == "Admin":
-    st.subheader("Admin — Thêm / Import / Export dữ liệu")
-    pwd = st.text_input("Nhập mật khẩu admin", type="password")
+    st.subheader("Đăng nhập để thêm phòng")
+    pwd = st.text_input("Nhập mật khẩu", type="password")
     if pwd != ADMIN_PASSWORD:
-        st.warning("Bạn đang ở chế độ view (nhập mật khẩu để vào admin).")
-        st.info("Để lọc phòng vào chế độ 'Nhân viên'.")
-        if st.checkbox("Xem trước dữ liệu (chỉ xem)"):
-            st.dataframe(load_data().head(50))
+        st.info("Để lọc phòng vào chế độ 'Nhân viên' hoặc 'CTV'.")
     else:
         st.success("Đăng nhập thành công — Admin.")
 
@@ -633,8 +630,6 @@ if menu == "Admin":
                             image_urls.append(img_url)
                         except Exception as e:
                             st.error(f"Không upload được ảnh {f.name}: {e}")
-                
-                st.write("Ảnh đã upload:", image_urls)
 
                 submitted = st.form_submit_button("Lưu phòng", on_click=reset_add_form)
             if submitted:
@@ -1007,7 +1002,7 @@ elif menu == "Nhân viên":
         if st.session_state.logged_in:
             return True
     
-        st.warning("🔒 Vui lòng đăng nhập để truy cập mục NHÂN VIÊN")
+        st.warning("Vui lòng đăng nhập")
 
         username = st.text_input("Tên đăng nhập")
         password = st.text_input("Mật khẩu", type="password")
@@ -1023,8 +1018,6 @@ elif menu == "Nhân viên":
         return False
     if not check_login():
         st.stop()
-    st.subheader("Nhân viên — Lọc & Xem")
-    st.info("Nhân viên chỉ có thể **lọc** và **xem ĐỊA CHỈ** của phòng. Không có quyền chỉnh sửa.")
     df = load_data()
 
     st.markdown("### 🔎 Tìm kiếm & Lọc phòng")
@@ -1132,141 +1125,131 @@ elif menu == "Nhân viên":
             st.write(f"**Hoa hồng:** {row.get('Hoa hồng','')}") # 👉 HIỂN THỊ HOA HỒNG RIÊNG
             st.write(f"**Ghi chú:** {row.get('Ghi chú','')}")
             
-            st.markdown("""
-                <style>
-                    .img-thumb {
-                        border-radius: 10px;
-                        transition: transform 0.2s ease-in-out;
-                        cursor: pointer;
-                        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-                        width: 100%;
-                        height: 150px;
-                        object-fit: cover;
-                        margin-bottom: 5px;
-                    }
-                    .img-caption {
-                        text-align: center;
-                        font-size: 13px;
-                        opacity: 0.8;
-                        margin-bottom: 15px;
-                    }
+            image_urls = row.get("Hình ảnh", [])
+
+            if image_urls and isinstance(image_urls, list) and len(image_urls) > 0:
             
-                    /* MODAL */
-                    .modal-bg {
+                st.markdown("##### 📸 Hình ảnh phòng (Google Cloud Storage)")
+            
+                modal_key = f"modal_{ma_phong}"
+            
+                # CSS (injected once)
+                st.markdown("""
+                <style>
+                    .gallery-img {
+                        width: 100%;
+                        height: 160px;
+                        object-fit: cover;
+                        border-radius: 12px;
+                        cursor: pointer;
+                        transition: transform .2s;
+                        box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+                    }
+                    .gallery-img:hover { transform: scale(1.03); }
+            
+                    .modal-overlay {
                         position: fixed;
-                        top: 0; left: 0;
+                        top: 0; left: 0; 
                         width: 100%; height: 100%;
-                        background: rgba(0,0,0,0.7);
-                        backdrop-filter: blur(3px);
+                        background: rgba(0,0,0,0.75);
                         display: flex;
                         align-items: center;
                         justify-content: center;
                         z-index: 9999;
                     }
-                    .modal-img {
+                    .modal-content {
                         max-width: 90%;
                         max-height: 90%;
                         border-radius: 12px;
-                        box-shadow: 0 0 20px rgba(255,255,255,0.3);
+                        box-shadow: 0 0 20px rgba(255,255,255,0.4);
                     }
-                    .modal-nav {
-                        color: white;
-                        font-size: 40px;
+                    .modal-arrow {
                         position: fixed;
                         top: 50%;
                         transform: translateY(-50%);
+                        color: white;
+                        font-size: 50px;
                         cursor: pointer;
-                        padding: 10px;
-                        z-index: 10000;
                         user-select: none;
+                        z-index: 10000;
                     }
-                    .modal-prev { left: 20px; }
-                    .modal-next { right: 20px; }
+                    .modal-prev { left: 40px; }
+                    .modal-next { right: 40px; }
                 </style>
-            """, unsafe_allow_html=True)
-            
-            image_urls = row.get('Hình ảnh')
-            
-            # Khởi tạo modal_index nếu chưa có
-            if image_urls and isinstance(image_urls, list) and len(image_urls) > 0:
-                st.markdown("##### 📸 Hình ảnh phòng (Google Cloud Storage)")
-                
-                # Chọn tất cả
-                select_all = st.checkbox("✅ Chọn tất cả ảnh", key=f"{ma_phong}_select_all")
-                
-                cols = st.columns(min(len(image_urls), 3))
-                selected_files = []
-                
-                for i, url in enumerate(image_urls):
-                    with cols[i % 3]:
-                        # HIỂN THỊ ẢNH TRỰC TIẾP TỪ GOOGLE STORAGE
-                        st.image(url, caption=f"Ảnh {i+1}")
-            
-                        selected = select_all or st.checkbox("Chọn ảnh", key=f"{ma_phong}_{i}")
-                        if selected:
-                            selected_files.append(url)
-            
-                # Lắng nghe sự kiện mở modal
-                st.markdown("""
-                    <script>
-                        window.addEventListener("message", (event) => {
-                            if (event.data.type === "open-modal") {
-                                const index = event.data.index;
-                                window.parent.postMessage({type: 'streamlit:setComponentValue', value: index}, '*');
-                            }
-                        });
-                    </script>
                 """, unsafe_allow_html=True)
             
-            # Xử lý điều hướng modal trước khi lấy cur
-            if st.session_state.modal_index == "prev":
-                st.session_state.modal_index = (st.session_state.modal_index - 1) % len(image_urls)
-                st.experimental_rerun()
-            elif st.session_state.modal_index == "next":
-                st.session_state.modal_index = (st.session_state.modal_index + 1) % len(image_urls)
-                st.experimental_rerun()
+                # ensure state key
+                if modal_key not in st.session_state:
+                    st.session_state[modal_key] = None
             
-            # MODAL VIEW — HIỂN THỊ ẢNH LỚN
-            if st.session_state.modal_index is not None and isinstance(st.session_state.modal_index, int):
-                cur = st.session_state.modal_index
-                img_url = image_urls[cur]
+                cols = st.columns(3)
             
-                # Lấy ảnh gốc
-                img_data = requests.get(img_url).content
-                img_base64 = base64.b64encode(img_data).decode()
+                # --- RECOMMENDED: use direct URL in src (faster) ---
+                for i, url in enumerate(image_urls):
+                    with cols[i % 3]:
+                
+                        safe_url = url.replace('"', '%22')
+                
+                        st.markdown(
+                            f"""
+                            <img src="{safe_url}"
+                                 class="gallery-img"
+                                 onclick="
+                                    document.getElementById('{modal_key}').style.display='flex';
+                                    document.getElementById('{modal_key}_img').src='{safe_url}';
+                                    window.currentIndex_{modal_key} = {i};
+                                 ">
+                            """,
+                            unsafe_allow_html=True
+                        )
             
+                # Convert Python list to a JSON array so JS sees valid strings (double quotes)
+                image_urls_json = json.dumps(image_urls)
+            
+                # ==== Modal HTML + JS ====
+                # Note: in this f-string we must double braces for literal { } in the JS function bodies.
                 st.markdown(
                     f"""
-                    <div class="modal-bg" onclick="window.parent.postMessage({{'type':'close-modal'}}, '*')">
-                        <img class="modal-img" src="data:image/jpeg;base64,{img_base64}">
-                        <div class="modal-nav modal-prev"
-                             onclick="event.stopPropagation(); window.parent.postMessage({{'type':'prev-img'}}, '*')">&#10094;</div>
-                        <div class="modal-nav modal-next"
-                             onclick="event.stopPropagation(); window.parent.postMessage({{'type':'next-img'}}, '*')">&#10095;</div>
+                    <div id="{modal_key}" class="modal-overlay" style="display:none;"
+                         onclick="this.style.display='none'">
+                
+                        <span class="modal-arrow modal-prev"
+                              onclick="event.stopPropagation(); movePrev_{modal_key}();">&#10094;</span>
+                
+                        <img id="{modal_key}_img" class="modal-content"
+                             onclick="event.stopPropagation();">
+                
+                        <span class="modal-arrow modal-next"
+                              onclick="event.stopPropagation(); moveNext_{modal_key}();">&#10095;</span>
                     </div>
+                
+                    <script>
+                    window.currentIndex_{modal_key} = 0;
+                    const imgList_{modal_key} = {image_urls_json};
+                
+                    function movePrev_{modal_key}() {{
+                        window.currentIndex_{modal_key} =
+                            (window.currentIndex_{modal_key} - 1 + imgList_{modal_key}.length)
+                            % imgList_{modal_key}.length;
+                
+                        document.getElementById("{modal_key}_img").src =
+                            imgList_{modal_key}[window.currentIndex_{modal_key}];
+                    }}
+                
+                    function moveNext_{modal_key}() {{
+                        window.currentIndex_{modal_key} =
+                            (window.currentIndex_{modal_key} + 1)
+                            % imgList_{modal_key}.length;
+                
+                        document.getElementById("{modal_key}_img").src =
+                            imgList_{modal_key}[window.currentIndex_{modal_key}];
+                    }}
+                    </script>
                     """,
                     unsafe_allow_html=True
                 )
-            
-                st.markdown("""
-                    <script>
-                    window.addEventListener("message", (event) => {
-                        if (event.data.type === "close-modal") {
-                            window.parent.postMessage({type:'streamlit:setComponentValue', value: null}, '*');
-                        }
-                        if (event.data.type === "prev-img") {
-                            window.parent.postMessage({type:'streamlit:setComponentValue', value: "prev"}, '*');
-                        }
-                        if (event.data.type === "next-img") {
-                            window.parent.postMessage({type:'streamlit:setComponentValue', value: "next"}, '*');
-                        }
-                    });
-                    </script>
-                """, unsafe_allow_html=True)
     
 elif menu == 'CTV':
-    st.subheader("Nhân viên — Lọc & Xem")
-    st.info("Nhân viên chỉ có thể **lọc** và **xem ĐỊA CHỈ** của phòng. Không có quyền chỉnh sửa.")
     df = load_data()
 
     st.markdown("### 🔎 Tìm kiếm & Lọc phòng")
@@ -1542,6 +1525,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
