@@ -1512,33 +1512,62 @@ elif menu == 'CTV':
                     unsafe_allow_html=True
                 )
                 
-                # Lấy URL hiện tại của app
+                # # Lấy URL hiện tại của app
+                # current_url = streamlit_js_eval(
+                #     js_expressions="window.location.href",
+                #     key=f"get_url_{ma_phong}"
+                # )
+                
+                # if current_url:
+                #     root = current_url.split("?")[0]   # bỏ query string
+                
+                #     # Mã hóa list ảnh
+                #     encoded = urllib.parse.quote(json.dumps(image_urls))
+                
+                #     # Link chia sẻ
+                #     share_url = f"{root}?images={encoded}"
+                
+                #     st.markdown("### 🔗 Link chia sẻ toàn bộ ảnh")
+                #     st.code(share_url, language="text")
+                
+                #     # Nút Copy
+                #     st.button(
+                #         "📋 Copy link",
+                #         on_click=streamlit_js_eval,
+                #         kwargs={
+                #             "js_expressions": f"navigator.clipboard.writeText('{share_url}')",
+                #             "key": f"copy_link_{ma_phong}"
+                #         }
+                #     )
+
+                # Lấy URL hiện tại của trang
                 current_url = streamlit_js_eval(
                     js_expressions="window.location.href",
-                    key=f"get_url_{ma_phong}"
+                    key=f"url_{ma_phong}"
                 )
                 
-                if current_url:
-                    root = current_url.split("?")[0]   # bỏ query string
+                # Nếu query string có sẵn thì bỏ đi, chỉ lấy base (không chứa ?images=)
+                root = (current_url or "").split("?")[0]
                 
-                    # Mã hóa list ảnh
-                    encoded = urllib.parse.quote(json.dumps(image_urls))
+                # Encode danh sách URL
+                encoded_images = urllib.parse.quote(json.dumps(image_urls))
                 
-                    # Link chia sẻ
-                    share_url = f"{root}?images={encoded}"
+                # Tạo link chia sẻ
+                share_link = f"{root}?images={encoded_images}"
                 
-                    st.markdown("### 🔗 Link chia sẻ toàn bộ ảnh")
-                    st.code(share_url, language="text")
+                # Hiển thị link
+                st.markdown("#### 🔗 Link chia sẻ toàn bộ ảnh")
+                st.code(share_link, language="text")
                 
-                    # Nút Copy
-                    st.button(
-                        "📋 Copy link",
-                        on_click=streamlit_js_eval,
-                        kwargs={
-                            "js_expressions": f"navigator.clipboard.writeText('{share_url}')",
-                            "key": f"copy_link_{ma_phong}"
-                        }
-                    )
+                # Nút copy
+                st.button(
+                    "📋 Copy link",
+                    on_click=streamlit_js_eval,
+                    kwargs={
+                        "js_expressions": f"navigator.clipboard.writeText('{share_link}')",
+                        "key": f"copy_link_{ma_phong}"
+                    }
+                )
             
             st.markdown("---")
 
@@ -1555,6 +1584,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
