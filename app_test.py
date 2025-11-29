@@ -1538,7 +1538,30 @@ elif menu == 'CTV':
                     """,
                     unsafe_allow_html=True
                 )
+                st.markdown("### ⬇️ Tải tất cả ảnh (ZIP)")
 
+                try:
+                    # Tạo nút download ZIP
+                    if st.button("📥 Tải tất cả ảnh"):
+                        zip_buffer = io.BytesIO()
+                
+                        with zipfile.ZipFile(zip_buffer, "w") as zf:
+                            for url in image_urls:
+                                filename = url.split("/")[-1]
+                                response = requests.get(url)
+                                zf.writestr(filename, response.content)
+                
+                        zip_buffer.seek(0)
+                
+                        st.download_button(
+                            label="📥 Download ZIP",
+                            data=zip_buffer,
+                            file_name="album.zip",
+                            mime="application/zip"
+                        )
+
+except Exception as e:
+    st.warning(f"Không thể tạo ZIP: {e}")
             
             st.markdown("---")
 
@@ -1555,6 +1578,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
