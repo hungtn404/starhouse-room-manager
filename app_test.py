@@ -1509,80 +1509,39 @@ elif menu == 'CTV':
                     unsafe_allow_html=True
                 )
 
-                # ==== SHARE BUTTONS BELOW GALLERY ====
-                st.markdown("#### 🔗 Chia sẻ hình ảnh")
+                # ==== SHARE ALL IMAGES IN ONE LINK ====
+
+                import urllib.parse
                 
-                if image_urls and len(image_urls) > 0:
-                    first_img = image_urls[0]  # chọn ảnh đầu tiên để chia sẻ
+                # Tạo 1 query string chứa tất cả ảnh
+                encoded_images = urllib.parse.quote(json.dumps(image_urls))
                 
-                    # Tạo URL encode
-                    encoded_url = requests.utils.quote(first_img, safe='')
+                share_link = f"{st.secrets['BASE_URL']}?images={encoded_images}"
                 
-                    # Zalo share (dùng URL encode)
-                    zalo_share = f"https://zalo.me/share?url={encoded_url}"
+                st.markdown("#### 🔗 Link chia sẻ toàn bộ ảnh")
                 
-                    # Facebook share
-                    fb_share = f"https://www.facebook.com/sharer/sharer.php?u={encoded_url}"
+                # Hiển thị box link
+                st.code(share_link, language="text")
                 
-                    colA, colB, colC = st.columns(3)
-                
-                    with colA:
-                        st.markdown(
-                            f"""
-                            <a href="{zalo_share}" target="_blank" style="text-decoration:none;">
-                                <button style="
-                                    padding:10px 18px;
-                                    background:#0068FF;
-                                    color:white;
-                                    border:none;
-                                    border-radius:8px;
-                                    width:100%;
-                                    cursor:pointer;
-                                ">📲 Chia sẻ Zalo</button>
-                            </a>
-                            """,
-                            unsafe_allow_html=True
-                        )
-                
-                    with colB:
-                        st.markdown(
-                            f"""
-                            <a href="{fb_share}" target="_blank" style="text-decoration:none;">
-                                <button style="
-                                    padding:10px 18px;
-                                    background:#1877F2;
-                                    color:white;
-                                    border:none;
-                                    border-radius:8px;
-                                    width:100%;
-                                    cursor:pointer;
-                                ">📘 Chia sẻ Facebook</button>
-                            </a>
-                            """,
-                            unsafe_allow_html=True
-                        )
-                
-                    with colC:
-                        if st.button("📋 Copy link ảnh"):
-                            st.session_state["copy_link"] = first_img
-                            st.toast("Đã sao chép link ảnh vào clipboard (nếu trình duyệt hỗ trợ).")
-                
-                        st.markdown(
-                            f"""
-                            <script>
-                                navigator.clipboard.writeText("{first_img}");
-                            </script>
-                            """,
-                            unsafe_allow_html=True
-                        )
-                
-                    # Nút tải ảnh
-                    st.download_button(
-                        label="⬇️ Tải ảnh đầu tiên",
-                        data=requests.get(first_img).content,
-                        file_name="room_image.jpg",
-                        mime="image/jpeg"
-                    )
+                # Nút copy
+                st.markdown(
+                    f"""
+                    <button onclick="navigator.clipboard.writeText('{share_link}'); 
+                                     alert('Đã copy link chia sẻ!');"
+                            style="
+                                background:#4CAF50;
+                                color:white;
+                                padding:10px 16px;
+                                border:none;
+                                border-radius:8px;
+                                cursor:pointer;
+                                margin-top:6px;
+                            ">
+                        📋 Copy Link
+                    </button>
+                    """,
+                    unsafe_allow_html=True
+                )
 
 
             
@@ -1601,6 +1560,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
