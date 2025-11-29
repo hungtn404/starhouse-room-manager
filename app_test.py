@@ -1584,18 +1584,8 @@ elif menu == 'CTV':
                 share_link = f"{root}?images={encoded_images}"
                 
                 # Hiển thị link
-                st.markdown("#### 🔗 Link chia sẻ toàn bộ ảnh")
+                st.markdown("#### 🔗 Link chia sẻ ảnh")
                 st.code(share_link, language="text")
-                
-                # Nút copy
-                st.button(
-                    "📋 Copy link",
-                    on_click=streamlit_js_eval,
-                    kwargs={
-                        "js_expressions": f"navigator.clipboard.writeText('{share_link}')",
-                        "key": f"copy_link_{ma_phong}"
-                    }
-                )
             
             st.markdown("---")
 
@@ -1612,6 +1602,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
