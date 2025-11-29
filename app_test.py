@@ -13,31 +13,31 @@ import urllib.parse, json
 import qrcode
 from io import BytesIO
 
-def render_image_viewer():
-    st.title("🖼️ Image Viewer")
+# def render_image_viewer():
+#     st.title("🖼️ Image Viewer")
 
-    query_params = st.query_params
-    if "images" not in query_params:
-        st.warning("❗ Không tìm thấy danh sách ảnh trong URL.")
-        return
+#     query_params = st.query_params
+#     if "images" not in query_params:
+#         st.warning("❗ Không tìm thấy danh sách ảnh trong URL.")
+#         return
 
-    try:
-        encoded = query_params["images"]
-        image_urls = json.loads(urllib.parse.unquote(encoded))
-    except:
-        st.error("Lỗi giải mã dữ liệu ảnh!")
-        return
+#     try:
+#         encoded = query_params["images"]
+#         image_urls = json.loads(urllib.parse.unquote(encoded))
+#     except:
+#         st.error("Lỗi giải mã dữ liệu ảnh!")
+#         return
 
-    st.success(f"Tải {len(image_urls)} ảnh thành công!")
-    cols = st.columns(3)
-    for i, url in enumerate(image_urls):
-        with cols[i % 3]:
-            st.image(url, use_column_width=True)
+#     st.success(f"Tải {len(image_urls)} ảnh thành công!")
+#     cols = st.columns(3)
+#     for i, url in enumerate(image_urls):
+#         with cols[i % 3]:
+#             st.image(url, use_column_width=True)
 
-# Tự động bật viewer nếu URL có ?images=
-if "images" in st.query_params:
-    render_image_viewer()
-    st.stop()
+# # Tự động bật viewer nếu URL có ?images=
+# if "images" in st.query_params:
+#     render_image_viewer()
+#     st.stop()
 
 
 def upload_to_gcs(bucket_name, file_data, file_name):
@@ -1539,7 +1539,29 @@ elif menu == 'CTV':
                     """,
                     unsafe_allow_html=True
                 )
+
+                st.markdown("### ⬇️ Tải từng ảnh trong gallery")
+
+                try:
+                    import requests
+                    from io import BytesIO
                 
+                    for i, url in enumerate(image_urls):
+                        filename = url.split("/")[-1]
+                        response = requests.get(url)
+                        img_bytes = BytesIO(response.content)
+                
+                        st.download_button(
+                            label=f"📥 {filename}",
+                            data=img_bytes,
+                            file_name=filename,
+                            mime="image/jpeg",
+                            key=f"download_all_{modal_key}_{i}"
+                        )
+                
+                except Exception as e:
+                    st.warning(f"Không tải được ảnh: {e}")
+ 
                 # # Lấy URL hiện tại của app
                 # current_url = streamlit_js_eval(
                 #     js_expressions="window.location.href",
@@ -1568,24 +1590,24 @@ elif menu == 'CTV':
                 #         }
                 #     )
 
-                # Lấy URL hiện tại của trang
-                current_url = streamlit_js_eval(
-                    js_expressions="window.parent.location.href",
-                    key=f"url_{ma_phong}"
-                )
+                # # Lấy URL hiện tại của trang
+                # current_url = streamlit_js_eval(
+                #     js_expressions="window.parent.location.href",
+                #     key=f"url_{ma_phong}"
+                # )
                 
-                # Nếu query string có sẵn thì bỏ đi, chỉ lấy base (không chứa ?images=)
-                root = (current_url or "").split("?")[0]
+                # # Nếu query string có sẵn thì bỏ đi, chỉ lấy base (không chứa ?images=)
+                # root = (current_url or "").split("?")[0]
                 
-                # Encode danh sách URL
-                encoded_images = urllib.parse.quote(json.dumps(image_urls))
+                # # Encode danh sách URL
+                # encoded_images = urllib.parse.quote(json.dumps(image_urls))
                 
-                # Tạo link chia sẻ
-                share_link = f"{root}?images={encoded_images}"
+                # # Tạo link chia sẻ
+                # share_link = f"{root}?images={encoded_images}"
                 
-                # Hiển thị link
-                st.markdown("#### 🔗 Link chia sẻ ảnh")
-                st.code(share_link, language="text")
+                # # Hiển thị link
+                # st.markdown("#### 🔗 Link chia sẻ ảnh")
+                # st.code(share_link, language="text")
             
             st.markdown("---")
 
@@ -1602,6 +1624,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
