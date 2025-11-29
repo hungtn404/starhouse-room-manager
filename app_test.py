@@ -9,8 +9,7 @@ import pandas as pd
 import base64, requests
 from google.cloud import storage
 from streamlit_js_eval import streamlit_js_eval
-import urllib.parse, json
-import qrcode
+import io, zipfile, requests
 from io import BytesIO
 
 # def render_image_viewer():
@@ -1538,7 +1537,6 @@ elif menu == 'CTV':
                     """,
                     unsafe_allow_html=True
                 )
-                st.markdown("### ⬇️ Tải tất cả ảnh (ZIP)")
 
                 try:
                     # Tạo nút download ZIP
@@ -1578,6 +1576,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
