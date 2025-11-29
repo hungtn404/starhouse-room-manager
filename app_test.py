@@ -1559,7 +1559,7 @@ elif menu == 'CTV':
                 with zipfile.ZipFile(zip_buffer, "w") as zf:
                     for url in image_urls:
                         filename = url.split("/")[-1]
-                        response = requests.get(url)
+                        response = requests.get(url, stream=True)
                         zf.writestr(filename, response.content)
                 zip_buffer.seek(0)
                 
@@ -1586,6 +1586,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
