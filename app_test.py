@@ -488,17 +488,14 @@ if menu == "Admin":
                 st.session_state['phong_con_list'][i]['ma_phong'] = ma_phong_current
 
                 st.markdown("---")
-
-            with st.form("add_form"):
-                so_nha = st.text_input("Số nhà", placeholder="Ví dụ: 745/10/5", key="so_nha_key")
-                quan_to_phuong = {
+            quan_to_phuong = {
                     "Gò Vấp": ["Phường 1", "Phường 3", "Phường 4", "Phường 5", "Phường 6", "Phường 7",
                     "Phường 8", "Phường 9", "Phường 10", "Phường 11", "Phường 12",
                     "Phường 13", "Phường 14", "Phường 15", "Phường 16", "Phường 17"],
                     "Tân Bình": ["Phường 1", "Phường 2", "Phường 3", "Phường 4", "Phường 5", "Phường 6", "Phường 7", "Phường 8", "Phường 9", "Phường 10", "Phường 11", "Phường 12", "Phường 13", "Phường 14", "Phường 15"],
                     "Bình Thạnh": ["Phường 1", "Phường 2", "Phường 3", "Phường 5", "Phường 6", "Phường 7", "Phường 11", "Phường 12", "Phường 13", "Phường 14", "Phường 15", "Phường 17", "Phường 19", "Phường 21", "Phường 22", "Phường 24", "Phường 25", "Phường 26", "Phường 27", "Phường 28"],
                     "Phú Nhuận": ["Phường 1", "Phường 2", "Phường 3", "Phường 4", "Phường 5", "Phường 7", "Phường 8", "Phường 9", "Phường 10", "Phường 11", "Phường 13", "Phường 15", "Phường 17"],
-                    "Quận 12": ["Phường An Phú Đông", "Phường Đông Hưng Thuận", "Phường Hiệp Thành", "Phường Tân Chánh Hiệp", "Phường Tân Thới Hiệp", "Phường Tân Thới Nhất", "Phường Thạnh Lộc", "Phường Thạnh Xuân", "Phường Tân Hưng Thuận", "Phường Thới An", "Phường Trung Mỹ Tây"]  # Nếu chưa có dữ liệu
+                    "Quận 12": ["Phường An Phú Đông", "Phường Đông Hưng Thuận", "Phường Hiệp Thành", "Phường Tân Chánh Hiệp", "Phường Tân Thới Hiệp", "Phường Tân Thới Nhất", "Phường Thạnh Lộc", "Phường Thạnh Xuân", "Phường Tân Hưng Thuận", "Phường Thới An", "Phường Trung Mỹ Tây"]
                 }
                 # Khởi tạo Session State nếu chưa có
                 if "quan_key" not in st.session_state:
@@ -514,6 +511,8 @@ if menu == "Admin":
                 
                 # Lấy danh sách phường theo quận đã chọn
                 phuong_options = quan_to_phuong[st.session_state["quan_key"]]
+            with st.form("add_form"):
+                so_nha = st.text_input("Số nhà", placeholder="Ví dụ: 745/10/5", key="so_nha_key")
                 
                 # Chọn Phường
                 if phuong_options:
@@ -1622,6 +1621,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
