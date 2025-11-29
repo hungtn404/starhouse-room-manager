@@ -1555,74 +1555,27 @@ elif menu == 'CTV':
                     unsafe_allow_html=True
                 )
 
-                st.markdown("### ⬇️ Tải ảnh")
+                # st.markdown("### ⬇️ Tải ảnh")
 
-                try:
-                    import requests
-                    from io import BytesIO
+                # try:
+                #     import requests
+                #     from io import BytesIO
                 
-                    for i, url in enumerate(image_urls):
-                        filename = url.split("/")[-1]
-                        response = requests.get(url)
-                        img_bytes = BytesIO(response.content)
+                #     for i, url in enumerate(image_urls):
+                #         filename = url.split("/")[-1]
+                #         response = requests.get(url)
+                #         img_bytes = BytesIO(response.content)
                 
-                        st.download_button(
-                            label=f"📥",
-                            data=img_bytes,
-                            file_name=filename,
-                            mime="image/jpeg",
-                            key=f"download_all_{modal_key}_{i}"
-                        )
+                #         st.download_button(
+                #             label=f"📥",
+                #             data=img_bytes,
+                #             file_name=filename,
+                #             mime="image/jpeg",
+                #             key=f"download_all_{modal_key}_{i}"
+                #         )
                 
-                except Exception as e:
-                    st.warning(f"Không tải được ảnh: {e}")
- 
-                # # Lấy URL hiện tại của app
-                # current_url = streamlit_js_eval(
-                #     js_expressions="window.location.href",
-                #     key=f"get_url_{ma_phong}"
-                # )
-                
-                # if current_url:
-                #     root = current_url.split("?")[0]   # bỏ query string
-                
-                #     # Mã hóa list ảnh
-                #     encoded = urllib.parse.quote(json.dumps(image_urls))
-                
-                #     # Link chia sẻ
-                #     share_url = f"{root}?images={encoded}"
-                
-                #     st.markdown("### 🔗 Link chia sẻ toàn bộ ảnh")
-                #     st.code(share_url, language="text")
-                
-                #     # Nút Copy
-                #     st.button(
-                #         "📋 Copy link",
-                #         on_click=streamlit_js_eval,
-                #         kwargs={
-                #             "js_expressions": f"navigator.clipboard.writeText('{share_url}')",
-                #             "key": f"copy_link_{ma_phong}"
-                #         }
-                #     )
-
-                # # Lấy URL hiện tại của trang
-                # current_url = streamlit_js_eval(
-                #     js_expressions="window.parent.location.href",
-                #     key=f"url_{ma_phong}"
-                # )
-                
-                # # Nếu query string có sẵn thì bỏ đi, chỉ lấy base (không chứa ?images=)
-                # root = (current_url or "").split("?")[0]
-                
-                # # Encode danh sách URL
-                # encoded_images = urllib.parse.quote(json.dumps(image_urls))
-                
-                # # Tạo link chia sẻ
-                # share_link = f"{root}?images={encoded_images}"
-                
-                # # Hiển thị link
-                # st.markdown("#### 🔗 Link chia sẻ ảnh")
-                # st.code(share_link, language="text")
+                # except Exception as e:
+                #     st.warning(f"Không tải được ảnh: {e}")
             
             st.markdown("---")
 
