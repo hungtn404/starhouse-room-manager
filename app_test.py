@@ -134,17 +134,44 @@ st.set_page_config(layout="wide")
 # Lấy URL gốc (không query string)
 base_url = st.query_params.get("base_url", None)
 
-# Nếu chạy trong Streamlit Cloud → tự xác định base URL
+# ============================================
+# LẤY BASE URL AN TOÀN KHÔNG DÙNG WALRUS (:=)
+# ============================================
+
+# Gửi URL gốc về streamlit qua postMessage
+st.components.v1.html(
+    """
+    <script>
+    const url = window.parent.location.href.split("?")[0];
+    window.parent.postMessage({type: 'BASE_URL', url: url}, "*");
+    </script>
+    """,
+    height=0
+)
+
+# Nhận lại URL gốc và đưa vào session_state
+st.components.v1.html(
+    """
+    <script>
+    window.addEventListener("message", (event) => {
+        if (event.data.type === "BASE_URL") {
+            window.parent.postMessage(
+                { type: "streamlit:setSessionState", state: { base_url: event.data.url } },
+                "*"
+            );
+        }
+    });
+    </script>
+    """,
+    height=0
+)
+
+# Lấy từ session_state (nếu có)
+base_url = st.session_state.get("base_url", None)
+
 if not base_url:
-    base_url = st_js_eval := st.components.v1.html(
-        """
-        <script>
-        const url = window.parent.location.href.split("?")[0];
-        window.parent.postMessage({type: 'BASE_URL', url: url}, "*");
-        </script>
-        """,
-        height=0
-    )
+    base_url = "http://localhost:8501"   # fallback khi test local
+
 
 # Nhận BASE_URL từ postMessage
 msg = st.session_state.get("base_url", None)
@@ -1752,6 +1779,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
