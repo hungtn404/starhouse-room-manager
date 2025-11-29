@@ -12,17 +12,6 @@ from streamlit_js_eval import streamlit_js_eval
 import io, zipfile, requests
 from io import BytesIO
 
-# Hàm tạo ZIP on-the-fly
-def create_zip():
-    zip_buffer = io.BytesIO()
-    with zipfile.ZipFile(zip_buffer, "w") as zf:
-        for url in image_urls:
-            filename = url.split("/")[-1]
-            response = requests.get(url, stream=True)
-            zf.writestr(filename, response.content)
-    zip_buffer.seek(0)
-    return zip_buffer
-
 # def render_image_viewer():
 #     st.title("🖼️ Image Viewer")
 
@@ -1567,12 +1556,23 @@ elif menu == 'CTV':
 
                 
                 # Nút download
-                st.download_button(
-                    label="📥 Tải tất cả ảnh",
-                    data=create_zip,  # chỉ chạy khi nhấn
-                    file_name=f"{ma_phong}_{masked_so_nha}_{row.get('Đường','')}.zip",
-                    mime="application/zip"
-                )
+                if st.button("📥 Tải tất cả ảnh"):  # chỉ trigger khi bấm
+                    with st.spinner("Đang tạo ZIP..."):
+                        zip_buffer = io.BytesIO()
+                        with zipfile.ZipFile(zip_buffer, "w") as zf:
+                            for url in image_urls:
+                                filename = url.split("/")[-1]
+                                response = requests.get(url, stream=True)
+                                zf.writestr(filename, response.content)
+                        zip_buffer.seek(0)
+                
+                    # Hiển thị nút download ngay sau khi ZIP sẵn
+                    st.download_button(
+                        label="📥 Download ZIP",
+                        data=zip_buffer,
+                        file_name=f"{ma_phong}_{masked_so_nha}_{row.get('Đường','')}.zip",
+                        mime="application/zip"
+                    )
             
             st.markdown("---")
 
@@ -1589,6 +1589,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
