@@ -33,7 +33,6 @@ def render_image_viewer():
     for i, url in enumerate(image_urls):
         with cols[i % 3]:
             st.image(url, use_column_width=True)
-            st.caption(url)
 
 # Tự động bật viewer nếu URL có ?images=
 if "images" in st.query_params:
@@ -1613,6 +1612,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
