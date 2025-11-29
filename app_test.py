@@ -488,7 +488,7 @@ if menu == "Admin":
                 st.session_state['phong_con_list'][i]['ma_phong'] = ma_phong_current
 
                 st.markdown("---")
-                quan_to_phuong = {
+        quan_to_phuong = {
                         "Gò Vấp": ["Phường 1", "Phường 3", "Phường 4", "Phường 5", "Phường 6", "Phường 7",
                         "Phường 8", "Phường 9", "Phường 10", "Phường 11", "Phường 12",
                         "Phường 13", "Phường 14", "Phường 15", "Phường 16", "Phường 17"],
@@ -1621,6 +1621,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
