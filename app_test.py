@@ -1509,21 +1509,27 @@ elif menu == 'CTV':
                     unsafe_allow_html=True
                 )
 
-                # ==== SHARE ALL IMAGES IN ONE LINK ====
+                # ==== SHARE ALL IMAGES IN ONE LINK (NO SECRETS NEEDED) ====
 
                 import urllib.parse
                 
-                # Tạo 1 query string chứa tất cả ảnh
+                # Lấy URL gốc của app
+                base_url = st.experimental_get_query_params()
+                current_page = st.get_url()
+                
+                # Tự động tạo URL /viewer
+                root = current_page.split("?")[0]  # bỏ query string
+                viewer_url = root + "?page=viewer"
+                
+                # Encode danh sách ảnh
                 encoded_images = urllib.parse.quote(json.dumps(image_urls))
                 
-                share_link = f"{st.secrets['BASE_URL']}?images={encoded_images}"
+                # Link chia sẻ cuối cùng
+                share_link = f"{viewer_url}&images={encoded_images}"
                 
                 st.markdown("#### 🔗 Link chia sẻ toàn bộ ảnh")
-                
-                # Hiển thị box link
                 st.code(share_link, language="text")
                 
-                # Nút copy
                 st.markdown(
                     f"""
                     <button onclick="navigator.clipboard.writeText('{share_link}'); 
@@ -1542,6 +1548,7 @@ elif menu == 'CTV':
                     """,
                     unsafe_allow_html=True
                 )
+
 
 
             
