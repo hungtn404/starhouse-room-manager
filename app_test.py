@@ -1571,7 +1571,7 @@ elif menu == 'CTV':
                         data=zip_buffer,
                         file_name=f"{ma_phong}_{masked_so_nha}_{row.get('Đường','')}.zip",
                         mime="application/zip",
-                        key=f"dlzip_{ma_phong}_{so_nha}"
+                        key=f"dlzip_{ma_phong}_{masked_so_nha}"
                     )
             
             st.markdown("---")
@@ -1589,6 +1589,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
