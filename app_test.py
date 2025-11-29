@@ -13,193 +13,27 @@ import urllib.parse, json
 import qrcode
 from io import BytesIO
 
-# ===========================
-# 1) VIEWER PRO (ViewerJS)
-# ===========================
-def render_viewer(image_urls):
-    st.subheader("🖼️ Album Viewer (Zoom • Fullscreen • Slideshow)")
+def render_image_viewer():
+    st.title("🖼️ Image Viewer")
 
-    viewer_js = """
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/viewerjs/1.11.6/viewer.min.js"></script>
-
-    <script>
-    window.addEventListener('DOMContentLoaded', (event) => {
-        const gallery = document.getElementById('gallery');
-        if (gallery) {
-            new Viewer(gallery, {
-                toolbar: true,
-                movable: true,
-                zoomable: true,
-                rotatable: true,
-                scalable: true,
-                fullscreen: true,
-                transition: true,
-                navbar: true,
-                title: true,
-            });
-        }
-    });
-    </script>
-    """
-
-    st.markdown(viewer_js, unsafe_allow_html=True)
-
-    html = '<ul id="gallery" style="list-style:none; padding:0;">'
-    for url in image_urls:
-        html += f"""
-        <li style="display:inline-block;">
-            <img src="{url}" style="max-width:160px; margin:6px; cursor:pointer; border-radius:6px;">
-        </li>
-        """
-    html += "</ul>"
-
-    st.markdown(html, unsafe_allow_html=True)
-
-
-# ===========================
-# 2) QR CODE SHARE
-# ===========================
-def render_qr(link):
-    st.subheader("📱 QR Code chia sẻ")
-
-    img = qrcode.make(link)
-    buf = BytesIO()
-    img.save(buf)
-
-    st.image(buf.getvalue(), width=200)
-
-
-# ===========================
-# 3) SHORTEN LINK
-# ===========================
-def shorten_link(url):
-    try:
-        tiny = requests.get(f"https://tinyurl.com/api-create.php?url={url}").text
-        return tiny
-    except:
-        return url
-
-
-# ===========================
-# 4) UPLOAD → TẠO ALBUM
-# ===========================
-def upload_and_generate(base_url):
-    st.title("📤 Tạo Album Ảnh Chia Sẻ")
-
-    uploaded = st.file_uploader("Chọn ảnh (nhiều ảnh cùng lúc)", accept_multiple_files=True)
-
-    if not uploaded:
-        st.info("↑ Hãy upload ảnh để bắt đầu")
+    query_params = st.query_params
+    if "images" not in query_params:
+        st.warning("❗ Không tìm thấy danh sách ảnh trong URL.")
         return
 
-    st.success(f"Đã tải {len(uploaded)} ảnh")
+    try:
+        encoded = query_params["images"]
+        image_urls = json.loads(urllib.parse.unquote(encoded))
+    except:
+        st.error("Lỗi giải mã dữ liệu ảnh!")
+        return
 
-    # Chuyển ảnh thành chuỗi Base64 inline — để demo, không cần upload server
-    urls = []
-    for file in uploaded:
-        data = file.read()
-        hex_str = data.hex()
-        mime = "image/jpeg"
-        url = f"data:{mime};base64,{data.hex()}"
-        urls.append(url)
-
-    # Encode album
-    encoded = urllib.parse.quote(json.dumps(urls))
-
-    share_link = f"{base_url}?images={encoded}"
-
-    st.subheader("🔗 Link chia sẻ album")
-    st.code(share_link)
-
-    # Link rút gọn
-    short = shorten_link(share_link)
-    if short != share_link:
-        st.write("✨ Link rút gọn:")
-        st.code(short)
-
-    render_qr(share_link)
-
-    st.divider()
-
-    st.subheader("👀 Xem trước album")
-    render_viewer(urls)
-
-
-# ===========================
-# APP START
-# ===========================
-st.set_page_config(layout="wide")
-
-# Lấy URL gốc (không query string)
-base_url = st.query_params.get("base_url", None)
-
-# ============================================
-# LẤY BASE URL AN TOÀN KHÔNG DÙNG WALRUS (:=)
-# ============================================
-
-# Gửi URL gốc về streamlit qua postMessage
-st.components.v1.html(
-    """
-    <script>
-    const url = window.parent.location.href.split("?")[0];
-    window.parent.postMessage({type: 'BASE_URL', url: url}, "*");
-    </script>
-    """,
-    height=0
-)
-
-# Nhận lại URL gốc và đưa vào session_state
-st.components.v1.html(
-    """
-    <script>
-    window.addEventListener("message", (event) => {
-        if (event.data.type === "BASE_URL") {
-            window.parent.postMessage(
-                { type: "streamlit:setSessionState", state: { base_url: event.data.url } },
-                "*"
-            );
-        }
-    });
-    </script>
-    """,
-    height=0
-)
-
-# Lấy từ session_state (nếu có)
-base_url = st.session_state.get("base_url", None)
-
-if not base_url:
-    base_url = "http://localhost:8501"   # fallback khi test local
-
-
-# Nhận BASE_URL từ postMessage
-msg = st.session_state.get("base_url", None)
-if msg:
-    base_url = msg
-
-# Khi user mở link share: ?images=
-query = st.query_params
-if "images" in query:
-    st.title("📸 Album Viewer")
-    encoded = query["images"]
-    urls = json.loads(urllib.parse.unquote(encoded))
-
-    render_viewer(urls)
-
-    full_link = base_url + "?images=" + encoded
-    st.write("🔗 Link album đang xem:")
-    st.code(full_link)
-
-    st.write("✨ Link rút gọn:")
-    st.code(shorten_link(full_link))
-
-    render_qr(full_link)
-    st.stop()
-
-
-# Nếu không phải link share → hiển thị trang tạo album
-upload_and_generate(base_url)
+    st.success(f"Tải {len(image_urls)} ảnh thành công!")
+    cols = st.columns(3)
+    for i, url in enumerate(image_urls):
+        with cols[i % 3]:
+            st.image(url, use_column_width=True)
+            st.caption(url)
 
 # Tự động bật viewer nếu URL có ?images=
 if "images" in st.query_params:
@@ -1779,6 +1613,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
