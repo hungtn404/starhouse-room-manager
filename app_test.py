@@ -406,7 +406,7 @@ if menu == "Admin":
                 ],
                 "Đường": [
                     "An Hội","An Nhơn","Bùi Quang Là","Bạch Đằng","Cây Trâm","Đỗ Thúc Tịnh",
-                    "Đường 26 Tháng 3","Dương Quang Hàm",
+                    "Đường 26 Tháng 3","Dương Quảng Hàm",
                     "Đường số 1","Đường số 2","Đường số 3","Đường số 4","Đường số 5",
                     "Đường số 6","Đường số 7","Đường số 8","Đường số 9","Đường số 10",
                     "Đường số 11","Đường số 12","Đường số 13","Đường số 14","Đường số 15",
@@ -1563,6 +1563,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
