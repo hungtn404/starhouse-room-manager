@@ -500,11 +500,11 @@ if menu == "Admin":
                 "12": QUAN12
             }
             
-            quan = st.selectbox("Quận", list(QUAN_DATA.keys()))
+            quan = st.selectbox("Quận", list(QUAN_DATA.keys()),key="quan_key")
             
-            phuong = st.selectbox("Phường", QUAN_DATA[quan]["Phường"])
-            
-            duong = st.selectbox("Đường", QUAN_DATA[quan]["Đường"])
+            phuong = st.selectbox("Phường", QUAN_DATA[quan]["Phường"],key="phuong_key")
+        
+            duong = st.selectbox("Đường", QUAN_DATA[quan]["Đường"],key="duong_key")
             st.markdown("### ➕ Thêm phòng mới")
 
             if 'phong_con_list' not in st.session_state:
@@ -1563,6 +1563,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
