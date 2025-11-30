@@ -569,7 +569,7 @@ if menu == "Admin":
                 with col_p2:
                     st.session_state['phong_con_list'][i]['loai'] = st.multiselect(
                         "Loại phòng", 
-                        ["Studio", "Duplex", "1PN", "2PN", "Tách bếp", "Khác"], 
+                        ["Studio", "Duplex", "1PN", "2PN", "Tách bếp", "Mặt bằng", "Khác"], 
                         default=st.session_state['phong_con_list'][i].get('loai', []),
                         key=f"loai_{i}" # Key duy nhất
                     )
@@ -1563,6 +1563,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
