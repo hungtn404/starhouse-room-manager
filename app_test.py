@@ -501,7 +501,7 @@ if menu == "Admin":
                     "Ba Tháng Hai","Lý Thái Tổ","Ngô Gia Tự","Sư Vạn Hạnh","Tô Hiến Thành",
                     "CMT8","Nguyễn Tri Phương","Nguyễn Giản Thanh","Vĩnh Viễn","Hoà Hảo",
                     "Lý Thường Kiệt","Trần Nhân Tôn","Tân Phước","Hồng Bàng","Lý Nam Đế",
-                    "Trần Minh Quyền","Thành Thái","Cư Xá Bắc Hải","Trường Sơn","Cửu Long"
+                    "Trần Minh Quyền","Thành Thái","Cư Xá Bắc Hải","Trường Sơn","Cửu Long","Hòa Hưng"
                 ]
             }
 
@@ -1578,6 +1578,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
