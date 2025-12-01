@@ -444,7 +444,7 @@ if menu == "Admin":
                     "Lạc Long Quân","Âu Cơ","Nguyễn Hồng Đào","Ba Vân","Lý Thường Kiệt",
                     "Bắc Hải","Lê Bình","Tân Sơn","Trường Chinh","Phạm Văn Bạch",
                     "Tô Hiến Thành","Cách Mạng Tháng 8","Thăng Long","Út Tịch",
-                    "Lê Trung Nghĩa","Lê Tấn Quốc","Hoàng Sa","Trường Sa","Phan Huy Ích"
+                    "Lê Trung Nghĩa","Lê Tấn Quốc","Hoàng Sa","Trường Sa","Phan Huy Ích","Thiên Phước"
                 ]
             }
             BINHTHANH = {
@@ -1578,6 +1578,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
