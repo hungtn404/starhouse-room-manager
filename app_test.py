@@ -491,13 +491,28 @@ if menu == "Admin":
                     "TA13","TA19","TA20","TX52","Vườn Lài","Trung Mỹ Tây 13A"
                 ]
             }
+            QUAN10 = {
+                "Phường": [
+                    "Phường 1","Phường 2","Phường 3","Phường 4","Phường 5",
+                    "Phường 6","Phường 7","Phường 8","Phường 9","Phường 10",
+                    "Phường 11","Phường 12","Phường 13","Phường 14","Phường 15"
+                ],
+                "Đường": [
+                    "Ba Tháng Hai","Lý Thái Tổ","Ngô Gia Tự","Sư Vạn Hạnh","Tô Hiến Thành",
+                    "CMT8","Nguyễn Tri Phương","Nguyễn Giản Thanh","Vĩnh Viễn","Hoà Hảo",
+                    "Lý Thường Kiệt","Trần Nhân Tôn","Tân Phước","Hồng Bàng","Lý Nam Đế",
+                    "Trần Minh Quyền","Thành Thái","Cư Xá Bắc Hải","Trường Sơn","Cửu Long"
+                ]
+            }
+
             
             QUAN_DATA = {
                 "Gò Vấp": GOVAP,
                 "Tân Bình": TANBINH,
                 "Bình Thạnh": BINHTHANH,
                 "Phú Nhuận": PHUNHUAN,
-                "Quận 12": QUAN12
+                "Quận 12": QUAN12,
+                "Quận 10": QUAN10
             }
             
             quan = st.selectbox("Quận", list(QUAN_DATA.keys()),key="quan_key")
@@ -1563,6 +1578,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
