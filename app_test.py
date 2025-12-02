@@ -504,6 +504,25 @@ if menu == "Admin":
                     "Trần Minh Quyền","Thành Thái","Cư Xá Bắc Hải","Trường Sơn","Cửu Long","Hòa Hưng"
                 ]
             }
+            THUDUC = {
+                "Phường": [
+                    "Linh Trung","Linh Xuân","Linh Chiểu","Linh Tây","Linh Đông",
+                    "Bình Thọ","Bình Chiểu","Hiệp Bình Chánh","Hiệp Bình Phước","Hiệp Phú",
+                    "Tăng Nhơn Phú A","Tăng Nhơn Phú B","Phước Long A","Phước Long B",
+                    "Tân Phú","Tân Lập","Long Thạnh Mỹ","Long Phước","Long Trường",
+                    "Long Bình","Trường Thạnh","Bình Khánh","Thạnh Mỹ Lợi","An Phú",
+                    "An Khánh","Cát Lái","Thủ Thiêm"
+                ],
+                "Đường": [
+                    "Xa Lộ Hà Nội","Phạm Văn Đồng","Võ Văn Ngân","Kha Vạn Cân","Tô Ngọc Vân",
+                    "Lê Văn Việt","Nguyễn Duy Trinh","Đỗ Xuân Hợp","Cao Tốc LT-DG","Nguyễn Xiển",
+                    "Lò Lu","Nguyễn Văn Tăng","Hoàng Hữu Nam","Man Thiện","Trương Văn Thành",
+                    "Hồ Tùng Mậu","Thống Nhất","Tam Bình","Tăng Nhơn Phú","Bình Thái",
+                    "Quang Trung","Bác Ái","Số 8","Số 11","Số 22","Số 5","Số 3","Số 2",
+                    "Song Hành XLHN","Hưng Phú","Gò Dưa","Cây Keo","Cầu Xây"
+                ]
+            }
+
 
             
             QUAN_DATA = {
@@ -512,7 +531,8 @@ if menu == "Admin":
                 "Bình Thạnh": BINHTHANH,
                 "Phú Nhuận": PHUNHUAN,
                 "Quận 12": QUAN12,
-                "Quận 10": QUAN10
+                "Quận 10": QUAN10,
+                "Thủ Đức": THUDUC
             }
             
             quan = st.selectbox("Quận", list(QUAN_DATA.keys()),key="quan_key")
@@ -1580,6 +1600,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
