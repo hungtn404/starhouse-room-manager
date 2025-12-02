@@ -1139,6 +1139,7 @@ elif menu == "Nhân viên":
             st.write(f"**Điện/Nước:** {row.get('Điện','')} / {row.get('Nước','')}    |    **Dịch vụ/Xe/Giặt:** {row.get('Dịch vụ','')} / {row.get('Xe','')} / {row.get('Giặt','')}")
             st.write(f"**Hoa hồng:** {row.get('Hoa hồng','')}") # 👉 HIỂN THỊ HOA HỒNG RIÊNG
             st.write(f"**Ghi chú:** {row.get('Ghi chú','')}")
+            st.write(f"**Ngày cập nhật:** {row.get('Ngày tạo','')}")
             
             image_urls = row.get("Hình ảnh", [])
 
@@ -1411,13 +1412,14 @@ elif menu == 'CTV':
             # Create shareable text - ĐÃ THÊM HOA HỒNG
             
 
-            st.markdown(f"#### 🏠 {dia_chi} ({ma_phong}, {row.get('Ngày tạo')})")
+            st.markdown(f"#### 🏠 {dia_chi} ({ma_phong})")
             st.write(f"**Giá:** {gia_text}  |  **Loại:** {loai_text}")
             st.write(f"**Cửa sổ:** {row.get('Cửa sổ','')}  |  **Ngày trống:** {ngay_text}")
             st.write(f"**Nội thất:** {nothat_text}    |    **Tiện ích:** {tienich_text}")
             st.write(f"**Điện/Nước:** {row.get('Điện','')} / {row.get('Nước','')}    |    **Dịch vụ/Xe/Giặt:** {row.get('Dịch vụ','')} / {row.get('Xe','')} / {row.get('Giặt','')}")
             st.write(f"**Hoa hồng:** {row.get('Hoa hồng','')}") # 👉 HIỂN THỊ HOA HỒNG RIÊNG
             st.write(f"**Ghi chú:** {row.get('Ghi chú','')}")
+            st.write(f"**Ngày cập nhật:** {row.get('Ngày tạo','')}")
 
             image_urls = row.get("Hình ảnh", [])
 
@@ -1578,6 +1580,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
