@@ -967,7 +967,7 @@ if menu == "Admin":
 Hoa hồng: {row.get('Hoa hồng', 'Không')}
         """.strip()
 
-                    st.markdown(f"#### 🏠 {dia_chi} ({ma_phong})")
+                    st.markdown(f"#### 🏠 {dia_chi} ({ma_phong}, {row.get('Ngày tạo')})")
                     st.write(f"**Giá:** {gia_text}  |  **Loại:** {loai_text}")
                     st.write(f"**Cửa sổ:** {row.get('Cửa sổ','')}  |  **Ngày trống:** {ngay_text}")
                     st.write(f"**Nội thất:** {nothat_text}    |    **Tiện ích:** {tienich_text}")
@@ -1578,6 +1578,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
