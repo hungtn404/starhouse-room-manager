@@ -892,6 +892,50 @@ if menu == "Admin":
 
             gia_min, gia_max = st.slider("Khoảng giá (VNĐ)", 2_000_000, 20_000_000, (2_000_000, 4_000_000), step=100_000)
 
+            # Chuyển số thành dạng 1,000,000
+            f_min = f"{gia_min:,}"
+            f_max = f"{gia_max:,}"
+            
+            # CSS định vị số ngay trên 2 nút slider
+            st.markdown(
+                f"""
+                <style>
+                /* Ẩn giá trị mặc định của Streamlit */
+                .stSlider > div > div > div > div:nth-child(1) {{
+                    display: none !important;
+                }}
+            
+                /* Số bên trái */
+                .left-val {{
+                    position: relative;
+                    top: -32px;
+                    left: 0px;
+                    color: red;
+                    font-weight: 600;
+                }}
+            
+                /* Số bên phải */
+                .right-val {{
+                    position: relative;
+                    top: -32px;
+                    float: right;
+                    right: 0px;
+                    color: red;
+                    font-weight: 600;
+                }}
+                </style>
+            
+                <div>
+                    <span class="left-val">{f_min}</span>
+                    <span class="right-val">{f_max}</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+            
+            # Hiển thị dưới slider (tuỳ thích)
+            st.write(f"**COST:** {f_min} - {f_max} VNĐ")
+            
             # Make date filter optional (Streamlit date_input always returns a date)
             use_date_filter = st.checkbox("Bật lọc theo ngày trống (trước ngày)")
             loc_ngay = None
@@ -1600,6 +1644,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
