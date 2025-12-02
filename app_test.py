@@ -891,50 +891,69 @@ if menu == "Admin":
                 loc_tienich = st.multiselect("Tiện ích", options=["Cổng vân tay", "Camera 24/7", "Vệ sinh chung", "Giờ giấc tự do", "Không chung chủ", "Máy giặt chung", "Thang máy"])
 
             gia_min, gia_max = st.slider("Khoảng giá (VNĐ)", 2_000_000, 20_000_000, (2_000_000, 4_000_000), step=100_000)
-
-            # Chuyển số thành dạng 1,000,000
-            f_min = f"{gia_min:,}"
-            f_max = f"{gia_max:,}"
-            
-            # CSS định vị số ngay trên 2 nút slider
-            st.markdown(
+            components.html(
                 f"""
-                <style>
-                /* Ẩn giá trị mặc định của Streamlit */
-                .stSlider > div > div > div > div:nth-child(1) {{
-                    display: none !important;
-                }}
+                <div id="slider-values" style="position: relative; height: 0px;">
+                    <div id="min-val" style="
+                        position: absolute; 
+                        top: -32px; 
+                        color: red; 
+                        font-weight: bold;">
+                        {gia_min:,}
+                    </div>
             
-                /* Số bên trái */
-                .left-val {{
-                    position: relative;
-                    top: -32px;
-                    left: 0px;
-                    color: red;
-                    font-weight: 600;
-                }}
-            
-                /* Số bên phải */
-                .right-val {{
-                    position: relative;
-                    top: -32px;
-                    float: right;
-                    right: 0px;
-                    color: red;
-                    font-weight: 600;
-                }}
-                </style>
-            
-                <div>
-                    <span class="left-val">{f_min}</span>
-                    <span class="right-val">{f_max}</span>
+                    <div id="max-val" style="
+                        position: absolute; 
+                        top: -32px; 
+                        color: red; 
+                        font-weight: bold;">
+                        {gia_max:,}
+                    </div>
                 </div>
-                """,
-                unsafe_allow_html=True
-            )
             
-            # Hiển thị dưới slider (tuỳ thích)
-            st.write(f"**COST:** {f_min} - {f_max} VNĐ")
+                <script>
+                function attach() {{
+                    // Tìm tất cả slider thực tế của Streamlit
+                    const sliders = window.parent.document.querySelectorAll('input[type="range"]');
+                    if (sliders.length < 2) {{
+                        setTimeout(attach, 200);
+                        return;
+                    }}
+            
+                    const sMin = sliders[0];
+                    const sMax = sliders[1];
+            
+                    // Hàm cập nhật vị trí
+                    function update() {{
+                        const rect1 = sMin.getBoundingClientRect();
+                        const rect2 = sMax.getBoundingClientRect();
+                        const frame = window.frameElement.getBoundingClientRect();
+            
+                        // Tính vị trí chính xác theo iframe
+                        const x1 = rect1.x - frame.x + rect1.width / 2;
+                        const x2 = rect2.x - frame.x + rect2.width / 2;
+            
+                        document.getElementById("min-val").style.left = x1 + "px";
+                        document.getElementById("max-val").style.left = x2 + "px";
+            
+                        // Update text luôn khi kéo
+                        document.getElementById("min-val").innerHTML = Number(sMin.value).toLocaleString();
+                        document.getElementById("max-val").innerHTML = Number(sMax.value).toLocaleString();
+                    }}
+            
+                    // Chỉ update khi slider thay đổi → KHÔNG GIẬT
+                    sMin.oninput = update;
+                    sMax.oninput = update;
+            
+                    // Update lần đầu
+                    update();
+                }}
+            
+                attach();
+                </script>
+                """,
+                height=60,
+            )
             
             # Make date filter optional (Streamlit date_input always returns a date)
             use_date_filter = st.checkbox("Bật lọc theo ngày trống (trước ngày)")
@@ -1644,6 +1663,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
