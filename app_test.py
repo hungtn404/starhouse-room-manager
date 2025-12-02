@@ -12,6 +12,8 @@ from streamlit_js_eval import streamlit_js_eval
 import io, zipfile, requests
 from io import BytesIO
 
+import streamlit.components.v1 as components
+
 # def render_image_viewer():
 #     st.title("🖼️ Image Viewer")
 
@@ -1663,6 +1665,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
