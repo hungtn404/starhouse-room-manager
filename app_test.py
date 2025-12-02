@@ -890,7 +890,7 @@ if menu == "Admin":
                 loc_nt = st.multiselect("Nội thất", options=["Máy lạnh", "Tủ lạnh", "Giường", "Nệm", "Bàn Ghế", "Nước nóng NLMT", "Nước nóng Điện"])
                 loc_tienich = st.multiselect("Tiện ích", options=["Cổng vân tay", "Camera 24/7", "Vệ sinh chung", "Giờ giấc tự do", "Không chung chủ", "Máy giặt chung", "Thang máy"])
 
-            gia_min, gia_max = st.slider("Khoảng giá (VNĐ)", 2_000_000, 50_000_000, (2_000_000, 20_000_000), step=100_000)
+            gia_min, gia_max = st.slider("Khoảng giá (VNĐ)", 2_000_000, 20_000_000, (2_000_000, 4_000_000), step=100_000, format="%,d")
 
             # Make date filter optional (Streamlit date_input always returns a date)
             use_date_filter = st.checkbox("Bật lọc theo ngày trống (trước ngày)")
@@ -1072,7 +1072,7 @@ elif menu == "Nhân viên":
         loc_nt = st.multiselect("Nội thất", options=["Máy lạnh", "Tủ lạnh", "Giường", "Nệm", "Bàn Ghế", "Nước nóng NLMT", "Nước nóng Điện"])
         loc_tienich = st.multiselect("Tiện ích", options=["Cổng vân tay", "Camera 24/7", "Vệ sinh chung", "Giờ giấc tự do", "Không chung chủ", "Máy giặt chung", "Thang máy"])
 
-    gia_min, gia_max = st.slider("Khoảng giá (VNĐ)", 2_000_000, 50_000_000, (2_000_000, 20_000_000), step=100_000)
+    gia_min, gia_max = st.slider("Khoảng giá (VNĐ)", 2_000_000, 20_000_000, (2_000_000, 4_000_000), step=100_000, format="%,d")
 
     # Make date filter optional (Streamlit date_input always returns a date)
     use_date_filter = st.checkbox("Bật lọc theo ngày trống (trước ngày)")
@@ -1600,6 +1600,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
