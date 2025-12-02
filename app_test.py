@@ -616,7 +616,7 @@ if menu == "Admin":
                 noi_that = st.multiselect("Nội thất", ["Máy lạnh", "Kệ bếp", "Tủ đồ", "Tủ lạnh", "Giường", "Pallet", "Nệm", "Bàn Ghế", "Nước nóng NLMT", "Nước nóng Điện", "Tivi", "Máy giặt"], key="noi_that_key")
                 tien_ich = st.multiselect("Tiện ích", ["Cổng vân tay", "Camera 24/7", "Vệ sinh chung", "Giờ giấc tự do", "Không chung chủ", "Máy giặt chung", "Thang máy"], key="tien_ich_key")
                 dien = st.selectbox("Giá điện", ["3.5K", "3.7K", "3.8K", "3.9K", "4.0K", "Cập nhật"], key="dien_key")
-                nuoc = st.selectbox("Giá nước", ["100K/người", "150K/người", "60K/người", "70K/người", "80K/người", "90K/người", "20K/khối", "23K/khối", "Cập nhật"], key="nuoc_key")
+                nuoc = st.selectbox("Giá nước", ["100K/người", "150K/người", "50K/người", "60K/người", "70K/người", "80K/người", "90K/người", "20K/khối", "23K/khối", "Cập nhật"], key="nuoc_key")
                 dich_vu = st.selectbox("Dịch vụ", ["100K/phòng", "50K/phòng", "120K/phòng", "150K/phòng", "180K/phòng", "200K/phòng", "300K/phòng", "70K/người", "150K/người", "100K/người", "Cập nhật"], key="dich_vu_key")
                 xe = st.selectbox("Xe", ["100K/xe", "50K/xe", "80K/chiếc", "90K/chiếc", "110K/xe", "120K/xe", "130K/xe", "150K/xe", "200K/xe", "FREE", "Cập nhật"], key="xe_key")
                 giat_chung = st.selectbox("Giặt chung", ["10K/lần", "15K/lần", "20K/lần", "50K/người", "80K/người", "150K/phòng", "Không"], key="giat_chung_key")
@@ -1580,6 +1580,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
