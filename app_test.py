@@ -639,7 +639,7 @@ if menu == "Admin":
                 tien_ich = st.multiselect("Tiện ích", ["Cổng vân tay", "Camera 24/7", "Vệ sinh chung", "Giờ giấc tự do", "Không chung chủ", "Máy giặt chung", "Thang máy"], key="tien_ich_key")
                 dien = st.selectbox("Giá điện", ["3.5K", "3.7K", "3.8K", "3.9K", "4.0K", "Cập nhật"], key="dien_key")
                 nuoc = st.selectbox("Giá nước", ["100K/người", "150K/người", "50K/người", "60K/người", "70K/người", "80K/người", "90K/người", "20K/khối", "23K/khối", "Cập nhật"], key="nuoc_key")
-                dich_vu = st.selectbox("Dịch vụ", ["100K/phòng", "50K/phòng", "120K/phòng", "150K/phòng", "180K/phòng", "200K/phòng", "300K/phòng", "70K/người", "150K/người", "100K/người", "Cập nhật"], key="dich_vu_key")
+                dich_vu = st.selectbox("Dịch vụ", ["100K/phòng", "50K/phòng", "120K/phòng", "150K/phòng", "180K/phòng", "200K/phòng", "250K/phòng", "300K/phòng", "70K/người", "150K/người", "100K/người", "Cập nhật"], key="dich_vu_key")
                 xe = st.selectbox("Xe", ["100K/xe", "50K/xe", "80K/chiếc", "90K/chiếc", "110K/xe", "120K/xe", "130K/xe", "150K/xe", "200K/xe", "FREE", "Cập nhật"], key="xe_key")
                 giat_chung = st.selectbox("Giặt chung", ["10K/lần", "15K/lần", "20K/lần", "50K/người", "80K/người", "150K/phòng", "Không"], key="giat_chung_key")
                 ghi_chu = st.text_area("Ghi chú (tùy chọn)", key="ghi_chu_key")
@@ -997,19 +997,6 @@ Hoa hồng: {row.get('Hoa hồng', 'Không')}
                     st.write(f"**Hoa hồng:** {row.get('Hoa hồng','')}") # 👉 HIỂN THỊ HOA HỒNG RIÊNG
                     st.write(f"**Ghi chú:** {row.get('Ghi chú','')}")
             
-                    # 👉 BƯỚC CẬP NHẬT: HIỂN THỊ HÌNH ẢNH (Từ câu trả lời trước)
-                    image_urls = row.get('Hình ảnh')
-                    if image_urls and isinstance(image_urls, list) and len(image_urls) > 0:
-                        st.markdown("##### 📸 Hình ảnh phòng")
-                        # Hiển thị tối đa 3 ảnh trên 1 dòng
-                        cols = st.columns(min(len(image_urls), 3)) 
-                        for i, url in enumerate(image_urls):
-                            if os.path.exists(url):
-                                # Sử dụng st.image để hiển thị ảnh từ đường dẫn cục bộ
-                                cols[i % 3].image(url, caption=os.path.basename(url), use_column_width="auto")
-                            else:
-                                cols[i % 3].warning(f"File ảnh không tồn tại: {os.path.basename(url)}")
-
                     # Thêm nút Chia sẻ
                     st.code(share_text, language="text") # Hiển thị text để tiện copy
             
@@ -1602,6 +1589,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
