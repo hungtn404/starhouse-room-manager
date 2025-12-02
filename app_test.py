@@ -893,69 +893,6 @@ if menu == "Admin":
                 loc_tienich = st.multiselect("Tiện ích", options=["Cổng vân tay", "Camera 24/7", "Vệ sinh chung", "Giờ giấc tự do", "Không chung chủ", "Máy giặt chung", "Thang máy"])
 
             gia_min, gia_max = st.slider("Khoảng giá (VNĐ)", 2_000_000, 20_000_000, (2_000_000, 4_000_000), step=100_000)
-            components.html(
-                f"""
-                <div id="slider-values" style="position: relative; height: 0px;">
-                    <div id="min-val" style="
-                        position: absolute; 
-                        top: -32px; 
-                        color: red; 
-                        font-weight: bold;">
-                        {gia_min:,}
-                    </div>
-            
-                    <div id="max-val" style="
-                        position: absolute; 
-                        top: -32px; 
-                        color: red; 
-                        font-weight: bold;">
-                        {gia_max:,}
-                    </div>
-                </div>
-            
-                <script>
-                function attach() {{
-                    // Tìm tất cả slider thực tế của Streamlit
-                    const sliders = window.parent.document.querySelectorAll('input[type="range"]');
-                    if (sliders.length < 2) {{
-                        setTimeout(attach, 200);
-                        return;
-                    }}
-            
-                    const sMin = sliders[0];
-                    const sMax = sliders[1];
-            
-                    // Hàm cập nhật vị trí
-                    function update() {{
-                        const rect1 = sMin.getBoundingClientRect();
-                        const rect2 = sMax.getBoundingClientRect();
-                        const frame = window.frameElement.getBoundingClientRect();
-            
-                        // Tính vị trí chính xác theo iframe
-                        const x1 = rect1.x - frame.x + rect1.width / 2;
-                        const x2 = rect2.x - frame.x + rect2.width / 2;
-            
-                        document.getElementById("min-val").style.left = x1 + "px";
-                        document.getElementById("max-val").style.left = x2 + "px";
-            
-                        // Update text luôn khi kéo
-                        document.getElementById("min-val").innerHTML = Number(sMin.value).toLocaleString();
-                        document.getElementById("max-val").innerHTML = Number(sMax.value).toLocaleString();
-                    }}
-            
-                    // Chỉ update khi slider thay đổi → KHÔNG GIẬT
-                    sMin.oninput = update;
-                    sMax.oninput = update;
-            
-                    // Update lần đầu
-                    update();
-                }}
-            
-                attach();
-                </script>
-                """,
-                height=60,
-            )
             
             # Make date filter optional (Streamlit date_input always returns a date)
             use_date_filter = st.checkbox("Bật lọc theo ngày trống (trước ngày)")
@@ -1665,6 +1602,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
