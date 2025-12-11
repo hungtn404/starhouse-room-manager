@@ -542,7 +542,7 @@ if menu == "Admin":
                     "Phú Định","Quốc Lộ 50","Rạch Cát","Tạ Quang Bửu",
                     "Tạ Uyên","Tân Hóa","Tùng Thiện Vương",
                     "Trần Nguyên Hãn","Trần Văn Đang","Trần Xuân Soạn",
-                    "Võ Văn Kiệt","Xóm Củi","Xóm Chùa"
+                    "Võ Văn Kiệt","Xóm Củi","Xóm Chùa","Đường B2"
                 ]
             }
 
@@ -1611,6 +1611,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
