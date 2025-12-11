@@ -524,6 +524,27 @@ if menu == "Admin":
                     "Song Hành XLHN","Hưng Phú","Gò Dưa","Cây Keo","Cầu Xây","Nguyễn Đình Thi"
                 ]
             }
+            QUAN8 = {
+                "Phường": [
+                    "Phường 1","Phường 2","Phường 3","Phường 4","Phường 5","Phường 6",
+                    "Phường 7","Phường 8","Phường 9","Phường 10","Phường 11","Phường 12",
+                    "Phường 13","Phường 14","Phường 15","Phường 16"
+                ],
+                "Đường": [
+                    "Âu Dương Lân","Bến Bình Đông","Bến Phú Định","Cao Xuân Dục","Chánh Hưng",
+                    "Chợ Lớn","Dạ Nam","Đặng Chất","Đinh Hòa","Dương Bá Trạc",
+                    "Hưng Phú","Hưng Phú 1","Hưng Phú 2","Hưng Phú 3",
+                    "Hoài Thanh","Hoàng Ngân","Hoàng Minh Đạo",
+                    "Kinh Dương Vương","Lâm Văn Bền","Lương Ngọc Quyến",
+                    "Mai Hắc Đế","Minh Phụng","Nguyễn Duy","Nguyễn Thị Tần",
+                    "Nguyễn Thị Nhỏ","Nguyễn Văn Của","Nguyễn Văn Linh",
+                    "Phạm Thế Hiển","Phạm Hùng","Phan Anh","Phan Văn Khỏe",
+                    "Phú Định","Quốc Lộ 50","Rạch Cát","Tạ Quang Bửu",
+                    "Tạ Uyên","Tân Hóa","Tùng Thiện Vương",
+                    "Trần Nguyên Hãn","Trần Văn Đang","Trần Xuân Soạn",
+                    "Võ Văn Kiệt","Xóm Củi","Xóm Chùa"
+                ]
+            }
 
 
             
@@ -1589,6 +1610,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
