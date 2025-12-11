@@ -556,7 +556,7 @@ if menu == "Admin":
                 "Quận 12": QUAN12,
                 "Quận 10": QUAN10,
                 "Thủ Đức": THUDUC,
-                "Quận 8: QUAN8
+                "Quận 8": QUAN8
             }
             
             quan = st.selectbox("Quận", list(QUAN_DATA.keys()),key="quan_key")
@@ -1611,6 +1611,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
