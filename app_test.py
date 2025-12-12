@@ -490,7 +490,7 @@ if menu == "Admin":
                     "QL1A","Nguyễn Ảnh Thủ","Tô Ký","Lê Văn Khương","Hà Huy Giáp",
                     "Nguyễn Văn Quá","Dương Thị Mười","Trường Chinh","Đông Bắc",
                     "Song Hành QL22","Nguyễn Văn Khối","HT13","HT17",
-                    "TA13","TA19","TA20","TX52","Vườn Lài","Trung Mỹ Tây 13A","Tân Thới Hiệp 14"
+                    "TA13","TA19","TA20","TX52","Vườn Lài","Trung Mỹ Tây 13A","Tân Thới Hiệp 14","Đường số 21"
                 ]
             }
             QUAN10 = {
@@ -1611,6 +1611,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
