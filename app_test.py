@@ -282,7 +282,8 @@ def ensure_data_file():
             "Giặt chung",
             "Ghi chú",
             "Hoa hồng",
-            "Ngày tạo"
+            "Ngày tạo",
+            "Nguồn"
         ])
         save_data_to_excel(df)
 
@@ -666,6 +667,7 @@ if menu == "Admin":
                 giat_chung = st.selectbox("Giặt chung", ["10K/lần", "15K/lần", "20K/lần", "50K/người", "80K/người", "150K/phòng", "Không"], key="giat_chung_key")
                 ghi_chu = st.text_area("Ghi chú (tùy chọn)", key="ghi_chu_key")
                 hoa_hong = st.text_input("Hoa hồng", key="hoa_hong_key") 
+                nguon = st.text_input("Nguồn", key="nguon_key")
                 
                 # --- GCS info ---
                 GCS_BUCKET_NAME = st.secrets["gcp_service_account"]["bucket_name"]
@@ -744,7 +746,8 @@ if menu == "Admin":
                             "Ghi chú": st.session_state.get("ghi_chu_key"),
                             "Hoa hồng": st.session_state.get("hoa_hong_key"),
                             "Hình ảnh": image_urls, # image_urls cần được xác định từ file_uploader trong form
-                            "Ngày tạo": datetime.now()
+                            "Ngày tạo": datetime.now(),
+                            "Nguồn": st.session_state.get("nguon_key")
                         }
                         rows_to_add.append(new_row)
                         df = pd.concat([df, pd.DataFrame([new_row])], ignore_index=True)
@@ -1611,6 +1614,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
