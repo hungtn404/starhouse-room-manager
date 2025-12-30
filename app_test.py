@@ -462,7 +462,7 @@ if menu == "Admin":
                     "Phan Đăng Lưu","Nguyễn Văn Đậu","Nguyễn Hữu Cảnh","Đinh Bộ Lĩnh",
                     "Nguyễn Xí","Phan Xích Long","Nguyễn Gia Trí (D2)","Lê Quang Định",
                     "Phan Văn Trị","Tôn Đức Thắng","Ngô Tất Tố","Phạm Văn Đồng","Trường Sa","Đặng Thùy Trâm","Bình Lợi",
-                    "Nguyên Hồng1"
+                    "Nguyên Hồng"
                 ]
             }
             PHUNHUAN = {
@@ -1615,6 +1615,7 @@ elif menu == 'CTV':
 st.markdown("---")
 
 st.caption("App xây dựng bời hungtn AKA TRAN NGOC HUNG")
+
 
 
 
